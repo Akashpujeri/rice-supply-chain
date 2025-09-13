@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">
+                    <i class="fas fa-history me-2"></i>Purchase History from Farmers
+                </h3>
+                <div>
+                    <button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#filterModal">
+                        <i class="fas fa-filter me-1"></i> Filter
+                    </button>
+                    <a href="#" class="btn btn-sm btn-success">
+                        <i class="fas fa-plus me-1"></i> New Purchase
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        {% if purchases %}
+            
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Ref #</th>
+                            <th>Farmer</th>
+                            <th>Type</th>
+                            <th class="text-end">Qty </th>
+                            <th class="text-end">Price/Qun</th>
+                            <th class="text-end">Moisture</th>
+                            <th class="text-end">Total</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for purchase in purchases %}
+                        <tr class="animate__animated animate__fadeIn" style="animation-delay: {{ forloop.counter0|divisibleby:2|yesno:'0.1s,0.2s' }}">
+                            <td class="ps-4 fw-bold text-primary">{{ purchase.reference_code }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar avatar-sm bg-light rounded-circle me-2">
+                                        <i class="fas fa-user-tie text-dark"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">{{ purchase.farmer_name }}</h6>
+                                        <small class="text-muted">{{ purchase.farmer_phone|default:"No phone" }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-success bg-opacity-10 text-success">
+                                    {{ purchase.paddy_type }}
+                                </span>
+                            </td>
+                            <td class="text-end">{{ purchase.quantity|intcomma }}</td>
+                            <td class="text-end">{{ purchase.purchase_price_per_kg|intcomma }}</td>
+                            <td class="text-end">
+                                <span class="badge {% if purchase.moisture_content < 12 %}bg-danger{% elif purchase.moisture_content < 14 %}bg-success{% else %}bg-warning{% endif %}">
+                                    {{ purchase.moisture_content }}%
+                                </span>
+                            </td>
+                            <td class="text-end fw-bold">{{ purchase.total_cost|intcomma }}</td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <small>{{ purchase.created_at|date:"d M Y" }}</small>
+                                    <small class="text-muted">{{ purchase.created_at|time }}</small>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <!-- Details -->
+                                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3 view-details" 
+                                            data-purchase-id="{{ purchase.id }}">
+                                        <i class="fas fa-eye me-1"></i> Details
+                                    </button>
+
+                                    <!-- Edit -->
+                                    <a href="{% url 'edit_purchase' purchase.id %}" 
+                                    class="btn btn-sm btn-outline-warning rounded-pill px-3">
+                                        <i class="fas fa-edit me-1"></i> Edit
+                                    </a>
+
+                                    <!-- Delete -->
+                                    <button class="btn btn-sm btn-outline-danger rounded-pill px-3" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteModal{{ purchase.id }}">
+                                        <i class="fas fa-trash me-1"></i> Delete
+                                    </button>
+                                    <!-- Delete Confirmation Modal -->
+                                    <div class="modal fade" id="deleteModal{{ purchase.id }}" tabindex="-1">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h5 class="modal-title">Confirm Delete</h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete purchase <strong>{{ purchase.reference_code }}</strong>?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <form method="post" action="{% url 'delete_purchase' purchase.id %}">
+                                                {% csrf_token %}
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                                </form>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center py-5">
+                                <div class="empty-state animate__animated animate__fadeIn">
+                                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                    <h5>No Purchase Records Found</h5>
+                                    <p class="text-muted">Start by adding your first purchase from a farmer</p>
+                                    <a href="{% url 'purchase_from_farmer' %}" class="btn btn-primary mt-3">
+                                        <i class="fas fa-plus me-1"></i> Record Purchase
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            {% if is_paginated %}
+            <div class="card-footer">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center mb-0">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1" aria-label="First">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+         <p>No purchases found.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Purchase Detail Modal -->
+<div class="modal fade" id="purchaseDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-primary text-white">
+                <h5 class="modal-title">Purchase Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="purchaseDetailContent">
+                <!-- Content loaded via AJAX -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary print-btn">
+                    <i class="fas fa-print me-1"></i> Print
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Modal -->
+<div class="modal fade" id="filterModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Filter Purchases</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="get">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Date Range</label>
+                        <div class="input-daterange input-group">
+                            <input type="date" class="form-control" name="start_date">
+                            <span class="input-group-text">to</span>
+                            <input type="date" class="form-control" name="end_date">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Paddy Type</label>
+                        <select class="form-select" name="paddy_type">
+                            <option value="">All Types</option>
+                            <option value="Sona Masoori">Sona Masoori</option>
+                            <option value="Basmati">Basmati</option>
+                            <option value="IR64">IR64</option>
+                            <option value="Swarna">Swarna</option>
+                            <option value="Local">Local Variety</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Moisture Content</label>
+                        <select class="form-select" name="moisture">
+                            <option value="">All</option>
+                            <option value="<12">Below 12% (Excellent)</option>
+                            <option value="12-14">12-14% (Good)</option>
+                            <option value=">14">Above 14% (Fair)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Animation and Hover Effects */
+    .table-hover tbody tr {
+        transition: all 0.3s ease;
+    }
+    .table-hover tbody tr:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        background-color: #f8f9fa;
+    }
+    
+    .badge {
+        transition: all 0.2s ease;
+    }
+    .badge:hover {
+        transform: scale(1.05);
+    }
+    
+    .view-details {
+        transition: all 0.3s ease;
+    }
+    .view-details:hover {
+        background-color: #0d6efd !important;
+        color: white !important;
+        transform: translateY(-1px);
+    }
+    
+    .empty-state {
+        opacity: 0;
+        animation: fadeIn 0.5s forwards;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Custom scrollbar for table */
+    .table-responsive::-webkit-scrollbar {
+        height: 8px;
+    }
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.js"></script>
+<script>
+$(document).ready(function() {
+    // View purchase details
+    $('.view-details').click(function() {
+        const purchaseId = $(this).data('purchase-id');
+        $('#purchaseDetailModal').modal('show');
+        
+        // Load content via AJAX
+        $.get(`/purchases/${purchaseId}/detail/`, function(data) {
+            $('#purchaseDetailContent').html(data);
+        }).fail(function() {
+            $('#purchaseDetailContent').html(
+                '<div class="alert alert-danger">Failed to load details. Please try again.</div>'
+            );
+        });
+    });
+    
+    // Print functionality
+    $('.print-btn').click(function() {
+        window.print();
+    });
+    
+    // Initialize datepicker
+    $('.input-daterange').datepicker({
+        format: "yyyy-mm-dd",
+        autoclose: true,
+        todayHighlight: true
+    });
+    
+    // Tooltips
+    $('[data-bs-toggle="tooltip"]').tooltip();
+});
+</script>
+{% endblock %}

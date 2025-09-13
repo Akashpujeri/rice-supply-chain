@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Search Results for "{{ query }}"</h2>
+    <hr>
+
+    {% if request.user.is_authenticated %}
+
+        {% if rice_results and request.user.role in "manager admin customer" %}
+        <h4>Rice Posts</h4>
+        <ul class="list-group">
+            {% for rice in rice_results %}
+                <li class="list-group-item">
+                    <a href="{% url 'individual_rice_post_detail' rice.id %}">{{ rice.rice_name }}</a>
+                    - {{ rice.price_per_kg }} per kg
+                </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            {% if request.user.role in "manager admin customer" %}
+            <p>No rice posts found.</p>
+            {% endif %}
+        {% endif %}
+
+        {% if paddy_results and request.user.role in "manager admin dealer" %}
+        <hr>
+        <h4>Paddy Posts</h4>
+        <ul class="list-group">
+            {% for paddy in paddy_results %}
+                <li class="list-group-item">
+                    <a href="{% url 'paddy_detail' paddy.id  %}">{{ paddy.name }} - {{ paddy.price_per_kg }} per kg</a>
+                </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            {% if request.user.role in "manager admin dealer" %}
+            <p>No paddy posts found.</p>
+            {% endif %}
+        {% endif %}
+
+    {% else %}
+        <p>Please log in to view search results.</p>
+    {% endif %}
+</div>
+{% endblock %}

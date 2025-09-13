@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Payment Failed{% endblock %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <h3 class="text-danger fw-bold">❌ Payment Failed</h3>
+    <p class="lead">The amount you entered does not match the required total.</p>
+    <a href="{% url 'my_order_page' %}" class="btn btn-outline-danger mt-3">Back to My Orders</a>
+</div>
+{% endblock %}

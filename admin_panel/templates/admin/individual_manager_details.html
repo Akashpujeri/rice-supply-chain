@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Manager Details{% endblock title %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Manager Profile Card -->
+    <div class="card shadow-lg border-0 mb-5">
+        <div class="row g-0">
+            <!-- Profile Image -->
+            <div class="col-md-4 text-center p-4">
+                <img src="{% if manager.profile_image %}{{ manager.profile_image.url }}{% else %}{% static 'default_images/default_manager.png' %}{% endif %}"
+                     class="img-fluid border rounded"
+                     style="max-width: 100%; height: auto;"
+                     alt="{{ manager.full_name }}'s profile image">
+            </div>
+
+            <!-- Manager Info -->
+            <div class="col-md-8">
+                <div class="card-body p-4">
+                    <h3 class="card-title">{{ manager.full_name }}</h3>
+                    <ul class="list-unstyled fs-6">
+                        <li><strong>Email:</strong> {{ manager.user.email }}</li>
+                        <li><strong>Phone:</strong> {{ manager.phone_number }}</li>
+                        <li><strong>Mill Name:</strong> {{ manager.mill_name }}</li>
+                        <li><strong>Mill Location:</strong> {{ manager.mill_location }}</li>
+                        <li><strong>Experience:</strong> {{ manager.experience_year }} years</li>
+                        <li><strong>Bio:</strong> {{ manager.bio|default:"No bio provided." }}</li>
+                        <li><strong>Joined:</strong> {{ manager.created_at|date:"F d, Y" }}</li>
+                    </ul>
+                    <a href="{% url 'purchase_history_seen_admin' manager.id %}" class="btn btn-primary mt-3">
+                        📜 View Purchases History
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rice Posts Section -->
+    <h4 class="mb-3 text-primary fw-semibold">🍚 Rice Posts by {{ manager.full_name }}</h4>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for post in manager.user.managerPost.all %}
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm rice-card transition">
+                <img src="{% if post.rice_image %}{{ post.rice_image.url }}{% else %}{% static 'images/default_rice.jpg' %}{% endif %}"
+                     class="card-img-top"
+                     alt="{{ post.rice_name|default:'Rice Image' }}"
+                     style="height: 200px; object-fit: cover;">
+
+                <div class="card-body">
+                    <h5 class="card-title">Rice Name: <span class="text-danger">{{ post.rice_name }}</span></h5>
+                    <p><strong>Owner:</strong> {{ post.manager.managerprofile.full_name }}</p>
+                    <p><strong>Quality:</strong> {{ post.quality }}</p>
+                    <p><strong>Quantity:</strong> {{ post.quantity_kg }} kg</p>
+                    <p><strong>Price/kg:</strong> <span class="text-danger">{{ post.price_per_kg }}</span></p>
+                    <p><strong>Description:</strong> {{ post.description|truncatechars:100 }}</p>
+
+                    <!-- Status and Action Buttons -->
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span>
+                            <strong>Status:</strong>
+                            <span class="badge {% if post.is_sold %}bg-danger{% else %}bg-success{% endif %}">
+                                {% if post.is_sold %}Sold{% else %}Available{% endif %}
+                            </span>
+                        </span>
+
+                        {% if request.user.role == "admin" or request.user == post.manager %}
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'update_rice_post' post.id %}" class="btn btn-outline-primary btn-sm">
+                                ✏️ Edit
+                            </a>
+                            <form action="{% url 'delete_rice_post' post.id %}" method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm"
+                                        onclick="return confirm('Are you sure you want to delete this post?');">
+                                    🗑️ Delete
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2 mt-3">
+                        {% if request.user.role == "customer" %}
+                            <a href="{% url 'purchase_rice_from_manager' post.id %}" class="btn btn-primary">
+                                🛒 Order Now
+                            </a>
+                        {% elif request.user.role == "manager" and request.user != post.manager %}
+                            <a href="{% url 'purchase_rice' post.id %}" class="btn btn-primary">
+                                🛒 Order Now
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'individual_rice_post_detail' post.id %}" class="btn btn-outline-secondary">
+                            🔍 View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col">
+            <p class="text-muted">No rice posts found for this manager.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Custom CSS -->
+<style>
+    .rice-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .rice-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .btn {
+        transition: all 0.3s ease-in-out;
+    }
+
+    .btn:hover {
+        transform: scale(1.03);
+    }
+</style>
+{% endblock content %}

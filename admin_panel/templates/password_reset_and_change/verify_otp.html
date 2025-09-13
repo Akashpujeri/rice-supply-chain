@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Verify OTP{% endblock title %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg p-4 text-center" style="max-width: 400px; width: 100%;">
+        <div class="card-body">
+            <!-- Page Title -->
+            <h2 class="text-primary mb-3">
+                <i class="fas fa-shield-alt"></i> OTP Verification
+            </h2>
+            <p class="text-muted">We have sent a *6-digit OTP* to your email: <strong class="text-dark">{{ email }}</strong></p>
+
+            <!-- Display Form Errors -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- OTP Verification Form -->
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="otp" class="form-label fw-bold">Enter OTP</label>
+                    <input type="text" name="otp" id="otp" class="form-control text-center fw-bold" 
+                           placeholder="6-digit code" required pattern="\d{6}" maxlength="6">
+                </div>
+
+                <button type="submit" class="btn btn-success w-100">
+                    <i class="fas fa-check-circle"></i> Verify OTP
+                </button>
+            </form>
+
+            <!-- Resend OTP & Back to Login -->
+            <div class="text-center mt-3">
+                <p>Didn't receive the OTP? <a href="{% url 'forgot_password' %}" class="text-danger fw-bold">Resend OTP</a></p>
+                <p><a href="{% url 'login' %}" class="text-primary fw-bold">Back to Login</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

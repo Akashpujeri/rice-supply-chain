@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h3 class="text-center mb-4 text-primary">Verify Your Phone</h3>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input 
+                            type="text" 
+                            name="phone" 
+                            id="phone" 
+                            class="form-control" 
+                            placeholder="e.g. 9XXXXXXXXXX" 
+                            required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Next</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

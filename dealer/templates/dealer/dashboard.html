@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dealer Dashboard | AgriConnect{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+  <!-- Dashboard Header -->
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 animate__animated animate__fadeInDown">
+    <div class="mb-3 mb-md-0">
+      <h2 class="fw-bold mb-2">
+        <i class="fas fa-tractor text-primary me-2"></i>Dealer Dashboard
+      </h2>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+        </ol>
+      </nav>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <!-- Primary Action -->
+        <a href="{% url 'paddy_purchase_add' %}" class="btn btn-success btn-hover-grow">
+            <i class="fas fa-plus-circle me-2"></i>Buy from Farmers
+        </a>
+        
+        <!-- Secondary Actions -->
+        <a href="{% url 'all_purchases_list' %}" class="btn btn-outline-primary btn-hover-grow">
+            <i class="fas fa-clipboard-list me-2"></i>My Purchases
+        </a>
+        
+        <a href="{% url 'marketplace_paddy_posts' %}" class="btn btn-outline-primary btn-hover-grow">
+            <i class="fas fa-bullhorn me-2"></i>Marketplace
+        </a>
+        
+        <a href="{% url 'incoming_order_for_paddy' %}" class="btn btn-outline-primary btn-hover-grow">
+            <i class="fas fa-truck-loading me-2"></i>Orders Received
+        </a>
+        
+        <a href="{% url 'selling_paddy_history' %}" class="btn btn-outline-primary btn-hover-grow">
+            <i class="fas fa-file-invoice-dollar me-2"></i>Sales History
+        </a>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4 animate__animated animate__fadeInLeft animate__fast">
+      <div class="card stats-card border-start-primary shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col me-2">
+              <div class="text-xs fw-bold text-primary text-uppercase mb-1">
+                Active Listings
+              </div>
+              <div class="h5 mb-0 fw-bold text-gray-800">{{ active_posts_count }}</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-boxes fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4 animate__animated animate__fadeInLeft" style="animation-delay: 0.1s;">
+      <div class="card stats-card border-start-success shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col me-2">
+              <div class="text-xs fw-bold text-success text-uppercase mb-1">
+                Total Inventory
+              </div>
+              <div class="h5 mb-0 fw-bold text-gray-800">{{ total_quantity }} Kg</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-weight-hanging fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4 animate__animated animate__fadeInLeft" style="animation-delay: 0.2s;">
+      <div class="card stats-card border-start-info shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col me-2">
+              <div class="text-xs fw-bold text-info text-uppercase mb-1">
+                Avg. Price
+              </div>
+              <div class="h5 mb-0 fw-bold text-gray-800">₹{{ avg_price|default:"0" }}/Kg</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-rupee-sign fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4 animate__animated animate__fadeInLeft" style="animation-delay: 0.3s;">
+      <a href="{% url 'dealer_order_list' %}" class="stats-card-link">
+        <div class="card stats-card border-start-warning shadow h-100 py-2 hover-effect">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col me-2">
+                <div class="text-xs fw-bold text-warning text-uppercase mb-1">
+                  Recent Orders
+                </div>
+                <div class="h5 mb-0 fw-bold text-gray-800">{{ recent_orders_count }}</div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Your Listings Table -->
+  <div class="row">
+    <div class="col-lg-8 mb-4">
+      <div class="card shadow mb-4 animate__animated animate__fadeInUp">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-white">
+          <h6 class="m-0 fw-bold text-primary">
+            <i class="fas fa-list-alt me-2"></i>Your Paddy Listings
+          </h6>
+        </div>
+        <div class="card-body">
+          {% if posts %}
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th>Variety</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Other Costs</th>
+                    <th>Moisture</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for post in posts %}
+                    <tr id="post-row-{{ post.id }}" class="listing-row">
+                      <td>
+                        <strong>{{ post.name|default:"Premium Paddy" }}</strong>
+                        <div class="small text-muted">{{ post.stored_since|date:"M d, Y" }}</div>
+                      </td>
+                      <td>{{ post.available_quantity }} Kg</td>
+                      <td>₹{{ post.price_per_kg|default:0 }}/Kg</td>
+                      <td>₹{{ post.transport_cost|default:0 }} + ₹{{ post.other_cost|default:0 }}</td>
+                      <td>{{ post.moisture_content }}%</td>
+                      <td>
+                        {% if post.is_available %}
+                          <span class="badge bg-success pulse-animation">Available</span>
+                        {% else %}
+                          <span class="badge bg-secondary">Sold</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <div class="d-flex gap-2">
+                          <a href="{% url 'edit_paddy_post' post.id %}" class="btn btn-sm btn-outline-primary btn-action" title="Edit">
+                            <i class="fas fa-edit"></i>
+                          </a>
+                          <a href="{% url 'delete_post' post.id %}" 
+                            class="btn btn-sm btn-outline-danger btn-action" 
+                            title="Delete">
+                            <i class="fas fa-trash-alt"></i>
+                          </a>
+                          <a href="{% url 'create_marketplace_post' post.id %}" 
+                            class="btn btn-sm btn-outline-success btn-action"
+                            title="Post to Marketplace">
+                            <i class="fas fa-store"></i>
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="text-center py-5">
+              <img src="../../media/empty-state.svg" alt="No listings" class="img-fluid mb-4 empty-state-img" style="max-height: 150px;">
+              <h5 class="text-muted mb-3">No Paddy Listings Yet</h5>
+              <p class="text-muted mb-4">Start by adding your paddy stock to appear in the marketplace</p>
+              <a href="{% url 'add_paddy_post' %}" class="btn btn-primary px-4 btn-hover-grow">
+                <i class="fas fa-plus me-2"></i>Create First Listing
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar Profile Summary -->
+    <div class="col-lg-4 mb-4">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-white">
+          <h6 class="m-0 fw-bold text-primary">
+            <i class="fas fa-user-circle me-2"></i>Your Profile
+          </h6>
+        </div>
+        <div class="card-body text-center">
+          <div class="profile-image-container mb-3">
+            <img src="{% if dealer.profile_image %}{{ dealer.profile_image.url }}{% else %}{% static 'dealer/author.svg' %}{% endif %}" 
+                 class="rounded-circle border profile-image" width="100" height="100" alt="Profile">
+          </div>
+          <h5 class="fw-bold mb-1">{{ dealer.user.username }}</h5>
+          <p class="text-muted small mb-3">{{ dealer.user.email }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

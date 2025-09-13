@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+  <!-- Enhanced Header with Search and Filter -->
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+    <h2 class="mb-3 mb-md-0 text-center text-md-start">
+      <i class="fas fa-store me-2 text-success"></i>Paddy Available in Marketplace
+    </h2>
+    <div class="d-flex">
+      <div class="input-group me-2" style="max-width: 250px;">
+        <input type="text" class="form-control" placeholder="Search paddy..." aria-label="Search">
+        <button class="btn btn-outline-success" type="button"><i class="fas fa-search"></i></button>
+      </div>
+      <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fas fa-filter"></i> Filters
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item {% if current_sort == 'price_asc' %}active{% endif %}" href="?sort=price_asc">Price: Low to High</a></li>
+        <li><a class="dropdown-item {% if current_sort == 'price_desc' %}active{% endif %}" href="?sort=price_desc">Price: High to Low</a></li>
+        <li><a class="dropdown-item {% if current_sort == 'moisture' %}active{% endif %}" href="?sort=moisture">Moisture Content</a></li>
+        <li><a class="dropdown-item {% if current_sort == 'recent' or not current_sort %}active{% endif %}" href="?sort=recent">Recently Added</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card bg-light border-0 rounded-3 shadow-sm h-100">
+        <div class="card-body text-center py-3">
+          <h5 class="text-muted mb-1">Available Posts</h5>
+          <p class="h4 text-success mb-0">{{ posts|length }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-light border-0 rounded-3 shadow-sm h-100">
+        <div class="card-body text-center py-3">
+          <h5 class="text-muted mb-1">Avg. Price</h5>
+          <p class="h4 text-primary mb-0">₹{{ avg_price|default:"--" }}/Kg</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-light border-0 rounded-3 shadow-sm h-100">
+        <div class="card-body text-center py-3">
+          <h5 class="text-muted mb-1">Top Dealer</h5>
+          <p class="h5 text-info mb-0">{{ top_dealer|default:"--" }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-light border-0 rounded-3 shadow-sm h-100">
+        <div class="card-body text-center py-3">
+          <h5 class="text-muted mb-1">Total Quantity</h5>
+          <p class="h4 text-warning mb-0">{{ total_quantity }} Kg</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paddy Cards Grid -->
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for post in posts %}
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm overflow-hidden">
+          <!-- Dynamic Image with fallback -->
+          <div class="position-relative" style="height: 180px; overflow: hidden;">
+            {% if post.image %}
+              <img src="{{post.image.url}}" class="card-img-top h-100 object-fit-cover" alt="{{ post.variety }} paddy">
+            {% else %}
+              <img src="../../media/rice_image/rice_2.jpg" class="card-img-top h-100 object-fit-cover" alt="Paddy stock">
+            {% endif %}
+            <div class="position-absolute top-0 end-0 bg-success text-white px-2 py-1 small">
+              {% if post.is_available %}
+                <i class="fas fa-check-circle me-1"></i> Available
+              {% else %}
+                <i class="fas fa-times-circle me-1"></i> Sold Out
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="card-body d-flex flex-column">
+            <!-- Dealer Info with Rating -->
+            <div class="d-flex align-items-center mb-3">
+              <div class="flex-shrink-0">
+                <img src="{% if post.dealer.profile_image %}{{ post.dealer.profile_image.url }}{% else %}{% static "dealer/author.svg" %}{% endif %}" 
+                     class="rounded-circle border" width="40" height="40" alt="{{ post.dealer.user.username }}">
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <h6 class="mb-0">{{ post.dealer.user.username }}</h6>
+                <div class="small text-warning">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star-half-alt"></i>
+                  <i class="far fa-star"></i>
+                  <span class="text-muted ms-1">(24)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Paddy Details -->
+            <h5 class="card-title text-truncate">{{ post.name|default:"Premium Paddy" }} Paddy</h5>
+            
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="badge bg-success bg-opacity-10 text-success">{{ post.quantity }} Kg</span>
+              <span class="badge bg-info bg-opacity-10 text-info">{{ post.moisture_content }}% Moisture</span>
+              <span class="badge bg-primary bg-opacity-10 text-primary">Grade {{ post.quality_grade|default:"A" }}</span>
+            </div>
+
+            <!-- Price Section -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <span class="h4 text-success">₹{{ post.price_per_kg }}</span>
+                <span class="text-muted">/Kg</span>
+              </div>
+              <div class="text-end">
+                <div class="small text-muted">Harvested</div>
+                <div>{{ post.stored_since|date:"M Y" }}</div>
+              </div>
+            </div>
+
+            <!-- Quality Notes with Read More -->
+            {% if post.quality_notes %}
+              <div class="mb-3">
+                <p class="card-text small text-muted quality-notes" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                  <i class="fas fa-info-circle text-info me-1"></i> {{ post.quality_notes }}
+                </p>
+                <a href="#" class="small read-more-link" style="display: none;">Read more</a>
+              </div>
+            {% endif %}
+
+            <!-- Action Buttons -->
+            <div class="mt-auto d-grid gap-2">
+              {% if post.is_available %}
+                <a href="{% url "purchase_paddy" post.id %}" class="btn btn-success">
+                  <i class="fas fa-shopping-cart me-2"></i>Order Now
+                </a>
+                <a href="{% url "paddy_detail" post.id %}" class="btn btn-outline-secondary">
+                  <i class="fas fa-info-circle me-2"></i>Details
+                </a>
+              {% else %}
+                <button class="btn btn-secondary disabled">
+                  <i class="fas fa-times-circle me-2"></i>Out of Stock
+                </button>
+                <a href="#" class="btn btn-outline-primary">
+                  <i class="fas fa-bell me-2"></i>Notify Me
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body text-center py-5">
+            <i class="fas fa-store-slash text-muted fa-3x mb-3"></i>
+            <h4 class="text-muted">No Paddy Stocks Available</h4>
+            <p class="text-muted">Check back later or contact dealers for availability</p>
+            <a href="#" class="btn btn-primary mt-2">
+              <i class="fas fa-plus me-2"></i>List Your Paddy
+            </a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if is_paginated %}
+    <nav aria-label="Page navigation" class="mt-5">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page=1" aria-label="First">
+              <span aria-hidden="true">&laquo;&laquo;</span>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+            <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+          {% endif %}
+        {% endfor %}
+        
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+              <span aria-hidden="true">&raquo;&raquo;</span>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+</div>
+
+<style>
+  .card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  }
+  .quality-notes {
+    transition: all 0.3s ease;
+  }
+  .quality-notes.expanded {
+    display: block !important;
+  }
+</style>
+
+<script>
+  // Simple JavaScript to handle "Read more" functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const notesElements = document.querySelectorAll('.quality-notes');
+    notesElements.forEach(el => {
+      const parent = el.parentElement;
+      const readMoreLink = parent.querySelector('.read-more-link');
+      
+      if (el.scrollHeight > el.clientHeight) {
+        if (readMoreLink) {
+          readMoreLink.style.display = 'block';
+          
+          readMoreLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            el.classList.toggle('expanded');
+            this.textContent = el.classList.contains('expanded') ? 'Read less' : 'Read more';
+          });
+        }
+      }
+    });
+  });
+</script>
+{% endblock %}

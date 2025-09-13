@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow rounded-4">
+        <div class="row g-0">
+            <!-- Rice Image -->
+            <div class="col-md-5">
+                <img src="{% if post.rice_image %}{{ post.rice_image.url }}{% else %}{% static 'images/default_rice.jpg' %}{% endif %}" 
+                    class="img-fluid rounded-start w-100 h-100 object-fit-cover" 
+                    alt="{{ post.title }}">            
+            </div>
+
+            <!-- Rice Info -->
+            <div class="col-md-7">
+                <div class="card-body p-4">
+                    <h2 class="card-title mb-3">{{ post.rice_name }}</h2>
+                    <p><strong>Manager:</strong> {{ post.manager.managerprofile.full_name }} ({{ post.manager.email}} | {{post.manager.managerprofile.phone_number}})</p>
+                    <p><strong>Quality:</strong> {{ post.quality }}</p>
+                    <p><strong>Price:</strong> {{ post.price_per_kg }}/kg</p>
+                    <p><strong>Available Stock:</strong> {{ post.quantity_kg }} kg</p>
+                    <p class="mt-3"><strong>Description:</strong></p>
+                    <p>{{ post.description | linebreaksbr  }}</p>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-3 mt-4">
+                        {% if request.user.role == "customer" %}
+                            <a href="{% url 'purchase_rice_from_manager' post.id %}" class="btn btn-success w-100 d-flex align-items-center justify-content-center gap-2">
+                                <i class="fas fa-shopping-cart"></i> Order Now
+                            </a>
+                            {% elif request.user.role == "manager" and request.user != post.manager %}
+                            <a href="{% url 'purchase_rice' post.id %}" class="btn btn-success w-100 d-flex align-items-center justify-content-center gap-2">
+                                <i class="fas fa-shopping-cart"></i> Order Now
+                            </a>
+                        {% endif %}
+                        {% if request.user.role == "admin" %}
+                        <a href="{% url 'see_all_manager' %}" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2">
+                            <i class="fas fa-arrow-left"></i> Back 
+                        </a>
+                        {% else %}
+                        <a href="{% url 'explore_all_rice_post' %}" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2">
+                            <i class="fas fa-arrow-left"></i> Back to List
+                        </a>
+
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

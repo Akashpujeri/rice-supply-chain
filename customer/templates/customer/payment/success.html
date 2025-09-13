@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Payment Success{% endblock %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <h3 class="text-success fw-bold">✅ Payment Successful!</h3>
+    <p class="lead">Your order has been confirmed and marked as successful.</p>
+    <a href="{% url 'my_order_page' %}" class="btn btn-primary mt-3">Back to My Orders</a>
+</div>
+{% endblock %}

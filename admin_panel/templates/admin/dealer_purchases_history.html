@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #f1f1f1;
+        transition: background-color 0.3s ease;
+    }
+    .badge-success {
+        font-size: 0.9rem;
+        padding: 0.4em 0.7em;
+        border-radius: 0.5rem;
+    }
+    .btn-secondary {
+        transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    .btn-secondary:hover {
+        transform: scale(1.05);
+        background-color: #495057;
+    }
+</style>
+
+<div class="container mb-5 mt-5">
+    <h2 class="mb-4 text-primary fw-bold">
+        🌾 Your Paddy Selling History
+    </h2>
+
+    {% if purchases %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-striped align-middle text-center bg-white shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">🌱 Paddy Name</th>
+                        <th scope="col">👨‍💼 Buyer (Manager)</th>
+                        <th scope="col">⚖️ Quantity </th>
+                        <th scope="col">💵 Price/Mon </th>
+                        <th scope="col">🚚 Transport Cost </th>
+                        <th scope="col">🧾 Total Price </th>
+                        <th scope="col">📅 Purchase Date</th>
+                        <th scope="col">💳 Payment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for purchase in purchases %}
+                    <tr>
+                        <td>{{ purchase.paddy.name }}</td>
+                        <td>{{ purchase.manager.managerprofile.full_name }}</td>
+                        <td>{{ purchase.quantity_purchased }}</td>
+                        <td>{{ purchase.paddy.price_per_kg }}</td>
+                        <td>{{ purchase.transport_cost }}</td>
+                        <td>৳{{ purchase.total_price }}</td>
+                        <td>{{ purchase.purchase_date|date:"M d, Y h:i A" }}</td>
+                        <td>
+                            {% if purchase.payment %}
+                                <span class="badge bg-success">Paid</span>
+                            {% else %}
+                                <span class="badge bg-danger">Unpaid</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-warning shadow-sm text-center mt-4">
+            ⚠️ No paddy sales recorded yet.
+        </div>
+    {% endif %}
+
+    <div class="mt-4 text-end">
+        {% if request.user.role == "admin" %}
+            <a href="{% url 'see_all_delears' %}" class="btn btn-secondary">⬅ Back to Dealer List</a>
+        {% else %}
+            <a href="{% url 'dealer_dashboard' %}" class="btn btn-secondary">⬅ Back to Dashboard</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

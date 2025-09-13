@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block content %}
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #f9f9f9;
+        transition: 0.2s ease-in-out;
+    }
+</style>
+
+<!-- ========================== Orders from Customers ========================== -->
+<div class="container mt-5 mb-5">
+    <h2 class="mb-4">Incoming Rice Orders From <span class="text-danger">Customers</span></h2>
+
+    {% if orders %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover align-middle text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Customer</th>
+                        <th>Rice Name</th>
+                        <th>Quantity (kg)</th>
+                        <th>Total Price </th>
+                        <th>Status</th>
+                        <th>Purchase Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        {% if order.status != "Successful" %}
+                        <tr>
+                            <td>{{ order.customer.username }}</td>
+                            <td>{{ order.rice.rice_name }}</td>
+                            <td>{{ order.quantity_purchased }}</td>
+                            <td>{{ order.total_price }}</td>
+                            <td><span class="badge bg-info">{{ order.status }}</span></td>
+                            <td>{{ order.purchase_date|date:"Y-m-d H:i" }}</td>
+                            <td>
+                                {% if order.status == "Pending" %}
+                                    <form method="post" action="{% url 'accept_rice_order_from_customer' order.id %}">
+                                        {% csrf_token %}
+                                        <select name="new_status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                            <option disabled selected>Update Status</option>
+                                            <option value="Accepted">Accept</option>
+                                            <option value="Cancel">Cancel</option>
+                                        </select>
+                                    </form>
+                                {% elif order.status == "Accepted" or order.status == "Shipping" %}
+                                    <form method="post" action="{% url 'update_order_status_for_customer' order.id %}">
+                                        {% csrf_token %}
+                                        <select name="new_status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                            <option disabled selected>Update Status</option>
+                                            {% if order.status == "Accepted" %}
+                                                <option value="Shipping">Mark as Shipping</option>
+                                                <option value="Cancel">Cancel</option>
+                                            {% elif order.status == "Shipping" %}
+                                                <option value="Delivered">Mark as Delivered</option>
+                                            {% endif %}
+                                        </select>
+                                    </form>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ order.status }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-warning">No rice orders from customers available.</div>
+    {% endif %}
+</div>
+
+<!-- ========================== Orders from Managers ========================== -->
+<div class="container mb-5">
+    <h2 class="mb-4">Incoming Rice Orders From <span class="text-danger">Managers</span></h2>
+
+    {% if rice_orders %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover align-middle text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Manager</th>
+                        <th>Rice Name</th>
+                        <th>Quantity (kg)</th>
+                        <th>Total Price </th>
+                        <th>Status</th>
+                        <th>Purchase Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in rice_orders %}
+                        {% if order.status != "Successful" %}
+                        <tr>
+                            <td>{{ order.manager.managerprofile.full_name }}</td>
+                            <td>{{ order.rice.rice_name }}</td>
+                            <td>{{ order.quantity_purchased }}</td>
+                            <td>{{ order.total_price }}</td>
+                            <td><span class="badge bg-info">{{ order.status }}</span></td>
+                            <td>{{ order.purchase_date|date:"Y-m-d H:i" }}</td>
+                            <td>
+                                {% if order.status == "Pending" %}
+                                    <form method="post" action="{% url 'accept_rice_order_from_manager' order.id %}">
+                                        {% csrf_token %}
+                                        <select name="new_status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                            <option disabled selected>Update Status</option>
+                                            <option value="Accepted">Accept</option>
+                                            <option value="Cancel">Cancel</option>
+                                        </select>
+                                    </form>
+                                {% elif order.status == "Accepted" or order.status == "Shipping" %}
+                                    <form method="post" action="{% url 'update_order_status_for_manager' order.id %}">
+                                        {% csrf_token %}
+                                        <select name="new_status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                            <option disabled selected>Update Status</option>
+                                            {% if order.status == "Accepted" %}
+                                                <option value="Shipping">Mark as Shipping</option>
+                                                <option value="Cancel">Cancel</option>
+                                            {% elif order.status == "Shipping" %}
+                                                <option value="Delivered">Mark as Delivered</option>
+                                            {% endif %}
+                                        </select>
+                                    </form>
+                                {% elif order.status == "Successful" %}
+                                    <span class="badge bg-success">Received</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ order.status }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-warning">No rice orders from managers available.</div>
+    {% endif %}
+</div>
+
+{% endblock %}

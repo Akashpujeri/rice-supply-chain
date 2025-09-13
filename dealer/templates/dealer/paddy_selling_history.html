@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mb-5 mt-5">
+    <h2 class="mb-4 text-primary fw-bold">Your Paddy Selling History</h2>
+
+    {% if selling_paddy %}
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Paddy Name</th>
+                    <th>Buyer (Manager)</th>
+                    <th>Quantity (kg)</th>
+                    <th>Price</th>
+                    <th>Transport Cost</th>
+                    <th>Total Price </th>
+                    <th>Purchase Date</th>
+                    <th>Payment</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for purchase in selling_paddy %}
+                <tr>
+                    <td>{{ purchase.paddy.name }}</td>
+                    <td>{{ purchase.manager.managerprofile.full_name}}</td>
+                    <td>{{ purchase.quantity_purchased }}</td>
+                    <td>{{ purchase.paddy.price_per_kg }}</td>
+                    <td>{{ purchase.transport_cost }}</td>
+                    <td>{{ purchase.total_price }}</td>
+                    <td>{{ purchase.purchase_date|date:"M d, Y h:i A" }}</td>
+                    <td class="text-center">
+                        {% if purchase.payment %}
+                            <span class="badge bg-success">Paid</span>
+                        {% else %}
+                            <span class="badge bg-success">Unpaid</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-warning">No paddy sales recorded yet.</div>
+    {% endif %}
+
+    <div class="mt-4">
+        {% if request.user.role == "admin" %}
+            <a href="{% url 'see_all_manager' %}" class="btn btn-secondary">Back</a>
+        {% else %}
+            <a href="{% url 'dealer_dashboard' %}" class="btn btn-secondary">Back</a>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

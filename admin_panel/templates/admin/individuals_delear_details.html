@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Dealer Details{% endblock title %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Dealer Profile Card -->
+    <div class="card shadow-lg border-0 mb-5">
+        <div class="row g-0">
+            <!-- Dealer Image -->
+            <div class="col-md-4 text-center p-4 bg-light">
+                <img src="{% if dealer.user.profile_image %}{{ dealer.user.profile_image.url }}{% else %}{% static 'default_images/delear_image.png' %}{% endif %}"
+                     class="img-fluid rounded border shadow"
+                     alt="Dealer Image"
+                     style="max-width: 250px; height: auto; object-fit: cover;">
+            </div>
+
+            <!-- Dealer Info -->
+            <div class="col-md-8">
+                <div class="card-body p-4">
+                    <h3 class="card-title text-primary">{{ dealer.user.username }}</h3>
+                    <ul class="list-unstyled fs-6">
+                        <li><strong>Email:</strong> {{ dealer.user.email }}</li>
+                        <li><strong>License Number:</strong> {{ dealer.license_number }}</li>
+                        <li><strong>Storage Capacity:</strong> {{ dealer.storage_capacity }} kg</li>
+                        <li><strong>State:</strong> {{ dealer.state|default:"N/A" }}</li>
+                        <li><strong>District:</strong> {{ dealer.district|default:"N/A" }}</li>
+                        <li><strong>Taluk:</strong> {{ dealer.taluk|default:"N/A" }}</li>
+                        <li><strong>Address:</strong> {{ dealer.address|default:"N/A" }}</li>
+                    </ul>
+
+                    <div class="d-flex gap-3 mt-4">
+                        <a href="{% url 'dealer_purchases_history' dealer.id %}" class="btn btn-outline-primary">
+                            📜 Purchase History
+                        </a>
+                        <a href="{% url 'see_all_delears' %}" class="btn btn-outline-secondary">
+                            ⬅ Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paddy Stock Section -->
+    {% if paddy_stocks %}
+    <h4 class="mb-4">🌾 Paddy Posts by <span class="text-danger fw-semibold">{{ dealer.user.username }}</span></h4>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for stock in paddy_stocks %}
+        <div class="col">
+            <div class="card h-100 shadow-sm paddy-card">
+                <img src="{% if stock.image %}{{ stock.image.url }}{% else %}{% static 'default_images/paddy_default.jpg' %}{% endif %}"
+                     class="card-img-top"
+                     alt="{{ stock.name }}"
+                     style="height: 200px; object-fit: cover;">
+
+                <div class="card-body">
+                    <h5 class="card-title">{{ stock.name }}</h5>
+                    <p><strong>Quantity:</strong> {{ stock.quantity }} units</p>
+                    <p><strong>Price/Kg:</strong> {{ stock.price_per_kg }}</p>
+                    <p><strong>Moisture:</strong> {{ stock.moisture_content }}%</p>
+                    <p><strong>Available:</strong> {{ stock.is_available|yesno:"Yes,No" }}</p>
+                    <p><strong>Stored Since:</strong> {{ stock.stored_since|date:"Y-m-d H:i" }}</p>
+                    {% if stock.quality_notes %}
+                        <p><strong>Notes:</strong> {{ stock.quality_notes }}</p>
+                    {% endif %}
+
+                    <!-- Actions -->
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        {% if request.user == dealer.user or request.user.role == "admin" %}
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'edit_paddy_post' stock.id %}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <form action="#" method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit"
+                                        class="btn btn-outline-danger btn-sm"
+                                        onclick="return confirm('Are you sure you want to delete this stock post?');">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid mt-2">
+                        <a href="{% url 'paddy_detail' stock.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-info-circle"></i> View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <div class="alert alert-info mt-4">No paddy stock listed by this dealer.</div>
+    {% endif %}
+</div>
+
+<!-- Hover Effect -->
+<style>
+    .paddy-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .paddy-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn {
+        transition: all 0.2s ease-in-out;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+    }
+</style>
+{% endblock content %}

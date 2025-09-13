@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Rice Stock Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #444;
+            padding: 6px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        h2 {
+            text-align: center;
+            color: red;
+            margin-bottom: 2px;
+        }
+        h4 { text-align: center; margin-bottom: -9px; }
+        p { text-align: center; margin-bottom: 1px; }
+        h5 { text-align: center; margin-bottom: 1px; }
+    </style>
+</head>
+<body>
+    <h2>📄 Riceipt for Selling Rice</h2>
+    <h4>Manager: {{ rice.manager.managerprofile.full_name}}</h4>
+    <h5>Mill Name: {{rice.manager.managerprofile.mill_name}}</h5>
+    <p>Address: {{rice.manager.managerprofile.address}}</p>
+{% comment %} 
+print(rice.rice.manager.managerprofile.full_name)
+    print(rice.rice.manager.managerprofile.mill_name)
+    print(rice.rice.rice_name)
+    print(rice.quantity_purchased)
+    print(rice.total_price)
+    print(rice.delivery_cost)
+    print(rice.purchase_date)
+
+{% endcomment %}
+    <table>
+        <thead>
+            <tr>
+                <th>Rice Name</th>
+                <th>Quantity (kg)</th>
+                <th>Price/kg </th>
+                <th>Delivery Cost </th>
+                <th>Total Price </th>
+                <th>Purchases Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            <tr>
+                <td>{{ rice.rice.rice_name}}</td>
+                <td>{{ rice.quantity_purchased}}</td>
+                <td>{{ price_per_kg }}</td>
+                <td>{{ rice.delivery_cost }}</td>
+                <td>{{ rice.total_price }}</td>
+                <td>{{ rice.purchase_date|date:"M d, Y h:i A" }}</td>
+            </tr>
+
+        </tbody>
+    </table>
+</body>
+</html>

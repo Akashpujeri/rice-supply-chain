@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Edit Paddy Stock{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">🌾 Edit Paddy Stock</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="id_paddy_name" class="form-label">Paddy Name</label>
+                    {{ form.paddy_name }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_moisture_content" class="form-label">Moisture Content (%)</label>
+                    {{ form.moisture_content }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_rice_type" class="form-label">Paddy Type</label>
+                    {{ form.rice_type }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_total_quantity" class="form-label">Total Quantity (kg)</label>
+                    {{ form.total_quantity }}
+                </div>
+
+                
+                <div class="mb-3">
+                    <label for="id_average_price_per_kg" class="form-label">Average Price per kg </label>
+                    {{ form.average_price_per_kg }}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_total_price" class="form-label">Total Price </label>
+                    {{ form.total_price }}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_description" class="form-label">Description</label>
+                    {{ form.description }}
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    💾 Save Changes
+                </button>
+                <a href="{% url 'paddy_stock_report' %}" class="btn btn-secondary">🔙 Back</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

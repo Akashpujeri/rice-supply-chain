@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Edit Rice Stock{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">✏️ Edit Rice Stock</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="id_rice_name" class="form-label">Rice Name</label>
+                    {{ form.rice_name }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_quality" class="form-label">Quality</label>
+                    {{ form.quality }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_rice_type" class="form-label">Type</label>
+                    {{ form.rice_type }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_stock_quantity" class="form-label">Stock Quantity (kg)</label>
+                    {{ form.stock_quantity }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_average_price_per_kg" class="form-label">Average Price per kg </label>
+                    {{ form.average_price_per_kg }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_average_price_per_kg" class="form-label">Average Price per kg </label>
+                    {{ form.total_price }}
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    💾 Save Changes
+                </button>
+                <a href="{% url 'rice_stock_report' %}" class="btn btn-secondary">🔙 Back</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

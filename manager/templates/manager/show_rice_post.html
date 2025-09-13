@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if check == 1 %}
+        Explore all rice post
+    {% elif check == 2 %}
+        My Rice Post
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-primary fw-bold">
+        {% if check == 1 %}
+            <i class="fas fa-seedling me-2"></i>Explore Rice Posts
+        {% elif check == 2 %}
+            <i class="fas fa-seedling me-2"></i>My Rice Posts
+        {% endif %}
+    </h2>
+
+    {% if rice_posts %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for post in rice_posts %}
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm transition card-hover">
+                        <div class="overflow-hidden">
+                            {% if post.rice_image %}
+                                <img src="{{ post.rice_image.url }}" class="card-img-top img-hover" alt="Rice Image" style="height: 200px; object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'images/default_rice.jpg' %}" class="card-img-top img-hover" alt="Default Rice Image" style="height: 200px; object-fit: cover;">
+                            {% endif %}
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="fw-bold mb-2">🍚 Rice Name: <span class="text-danger">{{ post.rice_name }}</span></h5>
+                            <h6 class="mb-1"><strong>Owner:</strong> {{ post.manager.managerprofile.full_name }}</h6>
+                            <p class="mb-1"><strong>Quality:</strong> {{ post.quality }}</p>
+                            <p class="mb-1"><strong>Quantity:</strong> {{ post.quantity_kg }} kg</p>
+                            <p class="mb-1"><strong>Price/kg:</strong> <span class="text-danger">{{ post.price_per_kg }}</span></p>
+                            <p class="mb-2"><strong>Description:</strong> {{ post.description|truncatechars:80 }}</p>
+
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="fw-bold">Status:
+                                        <span class="badge {% if post.is_sold %}bg-danger{% else %}bg-success{% endif %}">
+                                            {% if post.is_sold %}Sold{% else %}Available{% endif %}
+                                        </span>
+                                    </span>
+                                    {% if request.user.role == "manager" and request.user == post.manager %}
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{% url 'update_rice_post' post.id %}" class="btn btn-outline-primary" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="{% url 'delete_rice_post' post.id %}" method="POST" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-danger" title="Delete"
+                                                onclick="return confirm('Are you sure you want to delete this post?');">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    {% if request.user.role == "customer" %}
+                                        <a href="{% url 'purchase_rice_from_manager' post.id %}" class="btn btn-primary d-flex justify-content-center gap-2">
+                                            <i class="fas fa-shopping-cart"></i> Order Now
+                                        </a>
+                                    {% elif request.user.role == "manager" and request.user != post.manager %}
+                                        <a href="{% url 'purchase_rice' post.id %}" class="btn btn-primary d-flex justify-content-center gap-2">
+                                            <i class="fas fa-shopping-cart"></i> Order Now
+                                        </a>
+                                    {% endif %}
+
+                                    <a href="{% url 'individual_rice_post_detail' post.id %}" class="btn btn-outline-secondary d-flex justify-content-center gap-2">
+                                        <i class="fas fa-info-circle"></i> View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer text-muted small">
+                            Posted on {{ post.created_at|date:"F d, Y, h:i A" }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center mt-4" role="alert">
+            <p class="mb-0">You haven't posted any rice yet.</p>
+            <a href="{% url 'rice_stock_report' %}" class="btn btn-outline-primary mt-2">
+                <i class="fas fa-plus-circle"></i> Create a post now!
+            </a>
+        </div>
+    {% endif %}
+
+    {% if request.user.role != "customer"  and request.user.role != "admin"%}
+        <a href="{% url 'rice_stock_report' %}" class="btn btn-primary mt-4 shadow">
+            ➕ Create Rice Post
+        </a>
+    {% endif %}
+</div>
+
+<style>
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 12px;
+    }
+    .card-hover:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    .img-hover {
+        transition: transform 0.3s ease-in-out;
+    }
+    .img-hover:hover {
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}

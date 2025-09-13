@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12 col-lg-8 mx-auto">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <div class="d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Edit Paddy Stock</h3>
+            <a href="{% url 'dealer_dashboard' %}" class="btn btn-sm btn-light">
+              <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+            </a>
+          </div>
+        </div>
+        
+        <div class="card-body">
+          <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row g-3">
+              <!-- Left Column -->
+              <div class="col-md-6">
+                <h5 class="text-primary mb-3"><i class="fas fa-info-circle me-2"></i>Basic Information</h5>
+                {{ form.name|as_crispy_field }}
+                {{ form.moisture_category|as_crispy_field }}
+
+                <div class="row">
+                  <div class="col-md-6">
+                    {{ form.quantity|as_crispy_field }}
+                  </div>
+                  <div class="col-md-6">
+                    {{ form.available_quantity|as_crispy_field }}
+                  </div>
+                </div>
+
+                {{ form.price_per_kg|as_crispy_field }}
+                {{ form.moisture_content|as_crispy_field }}
+                {{ form.quality_notes|as_crispy_field }}
+              </div>
+
+              <!-- Right Column -->
+              <div class="col-md-6">
+                <h5 class="text-primary mb-3"><i class="fas fa-image me-2"></i>Product Image</h5>
+                {% if form.instance.image %}
+                  <div class="mb-3 text-center">
+                    <img src="{{ form.instance.image.url }}" alt="Current paddy image" 
+                         class="img-thumbnail mb-2" style="max-height: 200px;">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="image-clear" id="image-clear">
+                      <label class="form-check-label" for="image-clear">
+                        Remove current image
+                      </label>
+                    </div>
+                  </div>
+                {% endif %}
+                {{ form.image|as_crispy_field }}
+
+                <h5 class="text-primary mt-4 mb-3"><i class="fas fa-map-marker-alt me-2"></i>Availability</h5>
+                <div class="form-group">
+                  <div class="form-check form-switch">
+                    {{ form.is_available }}
+                    <label class="form-check-label" for="{{ form.is_available.id_for_label }}">
+                      Currently Available
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+              <button type="submit" class="btn btn-success px-4">
+                <i class="fas fa-save me-2"></i> Update Post
+              </button>
+              <a href="{% url 'dealer_dashboard' %}" class="btn btn-outline-secondary">
+                Cancel
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

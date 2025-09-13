@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Rice Stock Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #444;
+            padding: 6px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        h1 {
+            text-align: center;
+            color:red;
+            margin-bottom: 0;
+        }
+        p { text-align: center; font-size: 11px; margin-top: 2px; }
+        h2 { text-align: center; margin-bottom: 1px; }
+        h3 { text-align: center; margin-bottom: 1px; }
+    </style>
+</head>
+<body>
+    <h1>📄 Rice Stock Report</h1>
+    <h2>Manager: {{ manager.managerprofile.full_name }}</h2>
+    <h3>Total available rice stock: {{total_rice_stock}} Kg</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Rice Name</th>
+                <th>Quality</th>
+                <th>Type</th>
+                <th>Quantity (kg)</th>
+                <th>Avg Price/kg </th>
+                <th>Last Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in rice_stocks %}
+            <tr>
+                <td>{{ stock.rice_name }}</td>
+                <td>{{ stock.quality }}</td>
+                <td>{{ stock.rice_type }}</td>
+                <td>{{ stock.stock_quantity }}</td>
+                <td>{{ stock.average_price_per_kg }}</td>
+                <td>{{ stock.updated_at|date:"M d, Y h:i A" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

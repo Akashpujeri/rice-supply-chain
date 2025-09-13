@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container py-4">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-4">
+    {% comment %} <ol class="breadcrumb bg-light p-3 rounded-3">
+      <li class="breadcrumb-item">
+        <a href="{% url 'dealer_dashboard' %}" class="text-decoration-none">
+          <i class="fas fa-home me-1"></i> Dashboard
+        </a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="{% url 'marketplace_paddy_posts' %}" class="text-decoration-none">Marketplace</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">{{ post.name }}</li>
+    </ol> {% endcomment %}
+  </nav>
+
+  <div class="row g-4">
+    <!-- Main Section -->
+    <div class="col-lg-8">
+      <!-- Product Card -->
+      <div class="card shadow-sm border-0 overflow-hidden">
+        <div class="row g-0">
+          <!-- Image -->
+          <div class="col-md-5">
+            <div class="product-image-container p-3">
+              {% if post.image %}
+                <img src="{{ post.image.url }}" class="img-fluid rounded-3" alt="{{ post.name }}" id="mainProductImage" />
+              {% else %}
+                <div class="text-muted text-center">No image available</div>
+              {% endif %}
+              <div class="availability-badge">
+                <span class="badge bg-{% if post.is_available %}success{% else %}danger{% endif %}">
+                  {{ post.is_available|yesno:"Available,Out of Stock" }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Details -->
+          <div class="col-md-7">
+            <div class="card-body">
+              <h1 class="h3 fw-bold mb-2">{{ post.name }}</h1>
+              <div class="mb-3 text-warning">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i><i class="far fa-star"></i>
+                <span class="small text-muted ms-1">(12 reviews)</span>
+              </div>
+
+              <div class="d-flex align-items-center mb-3">
+                <h3 class="fw-bold text-primary mb-0">{{ post.price_per_kg }}</h3>
+                <span class="text-muted ms-2">Per Kg</span>
+              </div>
+
+              <div class="mb-4">
+                <div class="d-flex mb-2"><i class="fas fa-weight-hanging text-muted me-2"></i><span class="fw-bold">{{ post.quantity }} units available</span></div>
+                <div class="d-flex mb-2">
+                  <i class="fas fa-tint text-muted me-2"></i>
+                  <span class="fw-bold">
+                    {{ post.moisture_content }}% moisture
+                    <span class="badge ms-2 bg-{% if post.moisture_content < 14 %}success{% elif post.moisture_content < 16 %}warning{% else %}danger{% endif %}">
+                      {% if post.moisture_content < 14 %}Excellent{% elif post.moisture_content < 16 %}Good{% else %}High{% endif %}
+                    </span>
+                  </span>
+                </div>
+                <div class="d-flex">
+                  <i class="fas fa-calendar-day text-muted me-2"></i>
+                  <span class="fw-bold">Stored {{ post.stored_since|timesince }} ago</span>
+                </div>
+              </div>
+
+              <!-- Order Form -->
+              {% comment %} <form method="post" action="{% url 'place_order' post.id %}">
+                {% csrf_token %}
+                <div class="row g-2">
+                  <div class="col-md-6">
+                    <label class="form-label">Quantity (quintal)</label>
+                    <input type="number" name="quantity" class="form-control" value="1" min="1" max="{{ post.quantity }}" required />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Delivery Date</label>
+                    <input type="date" name="delivery_date" class="form-control" required />
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mt-3 py-2" {% if not post.is_available %}disabled{% endif %}>
+                  <i class="fas fa-shopping-cart me-2"></i>
+                  {% if post.is_available %}Add to Cart{% else %}Out of Stock{% endif %}
+                </button>
+              </form> {% endcomment %}
+
+              <div class="alert alert-info mt-2">
+                <i class="fas fa-info-circle me-2"></i> Minimum order: 100 Kg
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs: Details / Quality / Reviews -->
+      <div class="card shadow-sm mt-4 border-0">
+        <div class="card-body">
+          <ul class="nav nav-tabs" id="productTabs" role="tablist">
+            <li class="nav-item"><button class="nav-link active" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button">Details</button></li>
+            <li class="nav-item"><button class="nav-link" id="quality-tab" data-bs-toggle="tab" data-bs-target="#quality" type="button">Quality Notes</button></li>
+            <li class="nav-item"><button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button">Reviews (12)</button></li>
+          </ul>
+          <div class="tab-content pt-3">
+            <div class="tab-pane fade show active" id="details">
+              <div class="row">
+                <div class="col-md-6">
+                  <h5>Product Specs</h5>
+                  <ul>
+                    <li>Variety: {{ post.name }}</li>
+                    <li>Stock: {{ post.quantity }} units</li>
+                    <li>Moisture: {{ post.moisture_content }}%</li>
+                  </ul>
+                </div>
+                <div class="col-md-6">
+                  <h5>Storage Info</h5>
+                  <ul>
+                    <li>Since: {{ post.stored_since|timesince }}</li>
+                    <li>Method: Warehouse</li>
+                    <li>Location: {{ post.dealer.district }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="quality">
+              {% if post.quality_notes %}
+                <div class="quality-notes">{{ post.quality_notes|linebreaks }}</div>
+              {% else %}
+                <div class="alert alert-light">No quality notes.</div>
+              {% endif %}
+            </div>
+            <div class="tab-pane fade" id="reviews">
+              <div class="alert alert-info">Product reviews coming soon!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dealer Info -->
+      <div class="card shadow-sm mt-4 border-0">
+        <div class="card-body">
+          <h4><i class="fas fa-user-tie me-2"></i>Dealer Info</h4>
+          <div class="row">
+            <div class="col-md-3 text-center">
+              {% if post.dealer.profile_image %}
+                <img src="{{ post.dealer.profile_image.url }}" class="rounded-circle dealer-avatar" alt="Dealer" />
+              {% else %}
+                <img src="{% static "dealer/author.svg" %}" alt="">
+              {% endif %}
+            </div>
+            <div class="col-md-9">
+              <h5>{{ post.dealer.user.username }}</h5>
+              <p>License: {{ post.dealer.license_number|default:"Not provided" }}</p>
+              <p>Address: {{ post.dealer.state }}, {{ post.dealer.district }}</p>
+              <p>Capacity: {{ post.dealer.storage_capacity }} Kg</p>
+              <p>Member since: {{ post.dealer.user.date_joined|date:"Y" }}</p>
+              <a href="#" class="btn btn-outline-primary me-2"><i class="fas fa-envelope me-1"></i>Contact</a>
+              <a href="#" class="btn btn-outline-secondary"><i class="fas fa-store me-1"></i>Store</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+      <!-- Similar Products -->
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <h5><i class="fas fa-seedling me-2"></i>Similar Products</h5>
+          {% for similar in similar_products %}
+          <div class="card mb-3 border-0 shadow-sm-hover">
+            <div class="row g-0">
+              <div class="col-4">
+                {% if similar.image %}
+                  <img src="{{ similar.image.url }}" class="img-fluid rounded-start" style="height: 100%; object-fit: cover" />
+                {% else %}
+                  <div class="text-muted">No image</div>
+                {% endif %}
+              </div>
+              <div class="col-8">
+                <div class="card-body py-2">
+                  <a href="{% url 'paddy_detail' similar.id %}" class="text-decoration-none">
+                    <h6 class="card-title">{{ similar.name }}</h6>
+                  </a>
+                  <p class="text-muted small">{{ similar.quantity }} units</p>
+                  <p class="mb-0"><strong class="text-primary">{{ similar.price_per_kg }}</strong> <small>/Kg</small></p>
+                  <span class="badge bg-{% if similar.is_available %}success{% else %}secondary{% endif %}">{{ similar.is_available|yesno:"Available,Out of Stock" }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% empty %}
+          <div class="alert alert-light">No similar products.</div>
+          {% endfor %}
+          <a href="{% url 'marketplace_paddy_posts' %}" class="btn btn-outline-primary w-100 mt-2">View All</a>
+        </div>
+      </div>
+
+      <!-- Delivery Info -->
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <h5><i class="fas fa-truck me-2"></i>Delivery Info</h5>
+          <ul class="list-unstyled">
+            <li><i class="fas fa-check-circle text-success me-2"></i>Free delivery over 10 Quintal</li>
+            <li><i class="fas fa-check-circle text-success me-2"></i>Same-day dispatch before 2pm</li>
+            <li><i class="fas fa-check-circle text-success me-2"></i>2-3 business days delivery</li>
+            <li><i class="fas fa-check-circle text-success me-2"></i>Quality guarantee</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Safety Tips -->
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h5><i class="fas fa-shield-alt me-2"></i>Safe Trading Tips</h5>
+          <div class="alert alert-warning"><i class="fas fa-exclamation-triangle me-2"></i>Verify dealer before payment</div>
+          <ul class="list-unstyled small">
+            <li><i class="fas fa-circle text-primary me-1" style="font-size: 6px;"></i> Meet in public</li>
+            <li><i class="fas fa-circle text-primary me-1" style="font-size: 6px;"></i> Inspect product</li>
+            <li><i class="fas fa-circle text-primary me-1" style="font-size: 6px;"></i> Use secure payments</li>
+            <li><i class="fas fa-circle text-primary me-1" style="font-size: 6px;"></i> Report suspicious activity</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .product-image-container {
+    position: relative;
+    background-color: #f9f9f9;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+  .availability-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+  }
+  .dealer-avatar {
+    width: 100px;
+    height: 100px;
+    border: 3px solid #f8f9fa;
+    object-fit: cover;
+  }
+  .shadow-sm-hover:hover {
+    box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.1) !important;
+    transform: translateY(-2px);
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const dateInput = document.querySelector('input[type="date"]');
+    if (dateInput) {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      dateInput.min = tomorrow.toISOString().split("T")[0];
+    }
+  });
+</script>
+{% endblock %}

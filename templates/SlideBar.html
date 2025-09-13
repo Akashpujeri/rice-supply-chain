@@ -1,0 +1,93 @@
+{% load static %}
+{% comment %} For manager section {% endcomment %}
+{% if request.user.is_authenticated and request.user.role == "manager" %}
+<div class="bg-secondary text-white d-flex flex-column" style="min-width: 250px; height: 100vh;" >
+<!-- Profile Picture -->
+<div class="text-center my-2">
+    {% if manager and manager.profile_image %}
+        <img src="{{ manager.profile_image.url }}" class="rounded-circle img-thumbnail" style="width: 150px; height: 150px; object-fit: cover; margin-bottom: 10px;" alt="Profile Image">
+    {% else %}
+        <img src="{% static 'images/default_profile.png' %}" class="rounded-circle img-thumbnail" style="width: 150px; height: 150px; object-fit: cover; margin-bottom: 10px;" alt="Default Profile Image">
+    {% endif %}
+</div>
+    
+    <div class="sidebar-user-name p-1 fs-4 border-bottom">{{manager.full_name}}</div>
+    <div class="sidebar-header p-1 fs-5 border-bottom">Manager Panel</div>
+    <!-- Sidebar Navigation -->
+    <nav class="nav flex-column p-2">
+        <a class="nav-link text-white {% if request.resolver_match.url_name == 'manager_dashboard' %}active{% endif %}" href="{% url 'manager_dashboard' %}">🏠 Dashboard</a>
+        <a class="nav-link text-white {% if request.resolver_match.url_name == 'manager_profile' %}active{% endif %}" href="{% url 'manager_profile' %}">👤 View Profile</a>
+        <a class="nav-link text-white {% if request.resolver_match.url_name == 'manager_stock_management' %}active{% endif %}" href="{% url 'manager_stock_management' %}">✏️ My_Stock</a>
+        <hr class="my-1">
+        {% comment %} <a class="nav-link text-white {% if request.resolver_match.url_name == 'create_rice_post' %}active{% endif %}" href="{% url 'create_rice_post' %}">➕ Create Rice Post</a> {% endcomment %}
+        <a class="nav-link text-white {% if request.resolver_match.url_name == 'show_my_rice_post' %}active{% endif %}" href="{% url 'show_my_rice_post' %}">📃 My Rice Posts</a>
+        <hr class="my-1">
+        <a class="nav-link text-info {% if request.resolver_match.url_name == 'explore_all_rice_post' %}active{% endif %}" href="{% url 'explore_all_rice_post' %}">🌾 Explore All Rice Post</a>
+        <a class="nav-link text-info {% if request.resolver_match.url_name == 'explore_paddy_post' %}active{% endif %}" href="{% url 'explore_paddy_post' %}">🌾 Explore All Paddy Post</a>
+        <hr class="my-1">
+        <a class="nav-link text-light {% if request.resolver_match.url_name == 'incoming_order' %}active{% endif %}" href="{% url 'incoming_order' %}">📬 Incoming Order</a>
+        <a class="nav-link text-light {% if request.resolver_match.url_name == 'my_paddy_order' %}active{% endif %}" href="{% url 'my_paddy_order' %}">🛒 My paddy Order</a>
+        <a class="nav-link text-light {% if request.resolver_match.url_name == 'my_rice_order' %}active{% endif %}" href="{% url 'my_rice_order' %}">🛒 My rice Order</a>
+        <hr class="my-1">
+        <a class="nav-link text-light {% if request.resolver_match.url_name == 'purchase_history' %}active{% endif %}" href="{% url 'purchase_history' %}">📊 Purchases History</a>
+    </nav>
+</div>
+{% endif %}
+{% comment %} For admin section {% endcomment %}
+{% if request.user.is_authenticated and request.user.role == "admin" %}
+<div class="bg-secondary text-white d-flex flex-column" style="min-width: 250px; height: 100vh;" >
+<!-- Profile Picture -->
+<div class="text-center my-2">
+    {% if admin and admin.profile_image %}
+        <img src="{{ admin.profile_image.url }}" class="rounded-circle img-thumbnail" style="width: 150px; height: 150px; object-fit: cover; margin-bottom: 10px;" alt="Profile Image">
+    {% else %}
+        <img src="{% static 'images/default_profile.png' %}" class="rounded-circle img-thumbnail" style="width: 150px; height: 150px; object-fit: cover; margin-bottom: 10px;" alt="Default Profile Image">
+    {% endif %}
+</div>
+    
+    <div class="sidebar-user-name p-1 fs-4 border-bottom">{{admin.full_name}}</div>
+    <div class="sidebar-header p-1 fs-5 border-bottom">Admin Panel</div>
+    <!-- Sidebar Navigation -->
+    <nav class="nav flex-column p-2">
+        <a class="nav-link text-white {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}" href="{% url 'admin_dashboard' %}">🏠 Dashboard</a>
+        <a class="nav-link text-white {% if request.resolver_match.url_name == 'admin_profile' %}active{% endif %}" href="{% url 'admin_profile' %}">👤 View Profile</a>
+        <a class="nav-link text-white {% if request.resolver_match.url_name == 'update_admin_profile' %}active{% endif %}" href="{% url 'update_admin_profile' %}">✏️ Edit Profile</a>
+        <hr>
+        <a class="nav-link text-white {% if request.resolver_match.url_name == 'see_all_delears' %}active{% endif %}" href="{% url 'see_all_delears' %}">👤 See All Delears</a>
+        <a class="nav-link text-white {% if request.resolver_match.url_name == 'see_all_manager' %}active{% endif %}" href="{% url 'see_all_manager' %}">👤 See All Managers</a>
+        <a class="nav-link text-white {% if request.resolver_match.url_name == 'see_all_customers' %}active{% endif %}" href="{% url 'see_all_customers' %}">👤 See All Customers</a>
+        <hr>
+        <a class="nav-link text-white {% if request.resolver_match.url_name == 'explore_all_rice_post' %}active{% endif %}" href="{% url 'explore_all_rice_post' %}">📃 Explore Rice Posts</a>
+        <a class="nav-link text-info" href="{% url 'marketplace_paddy_posts' %}">🚪 Explore Paddy Post</a>
+    </nav>
+</div>
+{% endif %}
+{% comment %} For customer {% endcomment %}
+{% comment %} For customer section {% endcomment %}
+{% if request.user.is_authenticated and request.user.role == "customer" %}
+<div class="bg-secondary text-white d-flex flex-column" style="min-width: 250px; height: 100vh;" >
+<!-- Profile Picture -->
+<div class="text-center my-2">
+    {% if customer and customer.image %}
+        <img src="{{ customer.image.url }}" class="rounded-circle img-thumbnail" style="width: 150px; height: 150px; object-fit: cover; margin-bottom: 10px;" alt="Profile Image">
+    {% else %}
+        <img src="{% static 'images/default_profile.png' %}" class="rounded-circle img-thumbnail" style="width: 150px; height: 150px; object-fit: cover; margin-bottom: 10px;" alt="Default Profile Image">
+    {% endif %}
+</div>
+    
+    <div class="sidebar-user-name p-1 fs-4 border-bottom">{{customer.full_name}}</div>
+    <div class="sidebar-header p-1 fs-5 border-bottom">Customer Panel</div>
+    <!-- Sidebar Navigation -->
+    <nav class="nav flex-column p-2">
+        <a class="nav-link text-white {% if request.resolver_match.url_name == 'customer_dashboard' %}active{% endif %}" href="{% url 'customer_dashboard' %}">🏠 Dashboard</a>
+        <a class="nav-link text-white {% if request.resolver_match.url_name == 'customer_profile' %}active{% endif %}" href="{% url 'customer_profile' %}">👤 View Profile</a>
+        <a class="nav-link text-white {% if request.resolver_match.url_name == 'update_customer_profile' %}active{% endif %}" href="{% url "update_customer_profile" %}">✏️ Edit Profile</a>
+        <a class="nav-link text-white {% if request.resolver_match.url_name == 'explore_all_rice_post' %}active{% endif %}" href="{% url "explore_all_rice_post" %}">📃 Explore Rice Posts</a>
+        <hr class="my-1">
+        <a class="nav-link text-light {% if request.resolver_match.url_name == 'my_order_page' %}active{% endif %}" href="{% url 'my_order_page' %}">🚪 My Rice Orders</a>
+        <a class="nav-link text-light {% if request.resolver_match.url_name == 'rice_purchases_history' %}active{% endif %}" href="{% url 'rice_purchases_history' %}">🚪 Purchases History</a>
+
+
+    </nav>
+</div>
+{% endif %}

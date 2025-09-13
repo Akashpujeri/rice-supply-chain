@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Manager Profile{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="fas fa-user-circle"></i> Manager Profile</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            Profile Details
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Profile Info (left side) -->
+                <div class="col-md-8">
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold">Full Name:</div>
+                        <div class="col-sm-8">{{ manager.full_name }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold">Username:</div>
+                        <div class="col-sm-8">{{ manager.user.username }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold">Email:</div>
+                        <div class="col-sm-8">{{ manager.user.email }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold">Phone:</div>
+                        <div class="col-sm-8">{{ manager.phone_number }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold">Transaction_password:</div>
+                        <div class="col-sm-8">{{ manager.transaction_password }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold">Address:</div>
+                        <div class="col-sm-8">{{ manager.address }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold">Mill Name:</div>
+                        <div class="col-sm-8">{{ manager.mill_name }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold">Mill Location:</div>
+                        <div class="col-sm-8">{{ manager.mill_location }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold">Experience Year:</div>
+                        <div class="col-sm-8">{{ manager.experience_year }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold">Bio:</div>
+                        <div class="col-sm-8">{{ manager.bio }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold">Joined At:</div>
+                        <div class="col-sm-8">{{ manager.created_at|date:"F d, Y - H:i" }}</div>
+                    </div>
+                </div>
+
+                <!-- Profile Image (right side) -->
+                <div class="col-md-4 text-center">
+                    {% if manager.profile_image %}
+                        <img src="{{ manager.profile_image.url }}" alt="Profile Image"
+                             class="img-thumbnail shadow"
+                             style="width: 250px; height: 250px; object-fit: cover;">
+                    {% else %}
+                        <img src="{% static 'images/default_profile.png' %}" alt="Default Image"
+                             class="img-thumbnail shadow"
+                             style="width: 250px; height: 250px; object-fit: cover;">
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex justify-content-between">
+        <a href="{% url 'manager_dashboard' %}" class="btn btn-primary">Back</a>
+        <a href="{% url 'update_manager_profile' %}" class="btn btn-warning">
+            <i class="fas fa-edit"></i> Edit Profile
+        </a>
+    </div>
+</div>
+{% endblock %}

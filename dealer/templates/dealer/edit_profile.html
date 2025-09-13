@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile | AgriConnect{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-lg border-0 rounded-lg">
+        <!-- Header -->
+        <div class="card-header bg-success text-white">
+          <div class="d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">
+              <i class="fas fa-user-edit me-2"></i>Edit Dealer Profile
+            </h3>
+            <span class="badge bg-white text-success">Dealer ID: {{ dealer.id }}</span>
+          </div>
+        </div>
+        
+        <!-- Profile Picture -->
+        {% comment %} <div class="text-center py-4">
+          <div class="position-relative d-inline-block">
+            <img src="{% static 'images/default-dealer.png' %}" 
+                 class="rounded-circle border border-4 border-white shadow" 
+                 width="120" height="120" alt="Profile">
+            <button class="btn btn-sm btn-primary position-absolute bottom-0 end-0 rounded-circle">
+              <i class="fas fa-camera"></i>
+            </button>
+          </div>
+        </div> {% endcomment %}
+        
+        <!-- Form -->
+        <div class="card-body">
+          <form method="POST" novalidate>
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                  <p class="mb-0">{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+            
+            <!-- Personal Info -->
+            <div class="mb-4 p-3 bg-light rounded">
+              <h5 class="text-success mb-4">
+                <i class="fas fa-user me-2"></i>Personal Information
+              </h5>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">First Name</label>
+                  {{ form.first_name }}
+                  {% if form.first_name.errors %}
+                    <div class="invalid-feedback d-block">
+                      {{ form.first_name.errors.0 }}
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Last Name</label>
+                  {{ form.last_name }}
+                  {% if form.last_name.errors %}
+                    <div class="invalid-feedback d-block">
+                      {{ form.last_name.errors.0 }}
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Email</label>
+                  {{ form.email }}
+                  {% if form.email.errors %}
+                    <div class="invalid-feedback d-block">
+                      {{ form.email.errors.0 }}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            
+            <!-- Business Info -->
+            <div class="mb-4 p-3 bg-light rounded">
+              <h5 class="text-success mb-4">
+                <i class="fas fa-store me-2"></i>Business Information
+              </h5>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">License Number</label>
+                  {{ form.license_number }}
+                  {% if form.license_number.errors %}
+                    <div class="invalid-feedback d-block">
+                      {{ form.license_number.errors.0 }}
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Storage Capacity (kg)</label>
+                  {{ form.storage_capacity }}
+                  <small class="form-text text-muted">Total capacity of your storage facility</small>
+                  {% if form.storage_capacity.errors %}
+                    <div class="invalid-feedback d-block">
+                      {{ form.storage_capacity.errors.0 }}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            
+            <!-- Location Info -->
+            <div class="mb-4 p-3 bg-light rounded">
+              <h5 class="text-success mb-4">
+                <i class="fas fa-map-marked-alt me-2"></i>Location Details
+              </h5>
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label">State</label>
+                  {{ form.state }}
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">District</label>
+                  {{ form.district }}
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label"> Taluk </label>
+                  {{ form.taluk }}
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label"> City </label>
+                  {{ form.village_or_city }}
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label"> Pincode </label>
+                  {{ form.pincode }}
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Full Address</label>
+                  {{ form.address }}
+                  <small class="form-text text-muted">Include landmarks for easy location</small>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+              <a href="{% url 'dealer_dashboard' %}" class="btn btn-outline-secondary px-4">
+                <i class="fas fa-arrow-left me-2"></i>Cancel
+              </a>
+              <button type="submit" class="btn btn-success px-4">
+                <i class="fas fa-save me-2"></i>Update Profile
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card {
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+  .card-header {
+    padding: 1.25rem 1.5rem;
+  }
+  .form-control {
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+  }
+  .form-control:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+  }
+  .bg-light {
+    background-color: #f8f9fa!important;
+  }
+  .invalid-feedback {
+    font-size: 0.85rem;
+  }
+</style>
+{% endblock %}

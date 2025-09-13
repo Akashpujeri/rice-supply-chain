@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Mock Payment for {{ purchase.rice.rice_name }}</h2>
+
+    <div class="card mb-4 shadow">
+        <div class="card-body">
+            <p><strong>Manager:</strong> {{ purchase.manager.managerprofile.full_name }}</p>
+            <p><strong>Quantity Purchased:</strong> {{ purchase.quantity_purchased }} kg</p>
+            <p><strong>Price/Kg:</strong> {{ purchase.rice.price_per_kg }}</p>
+            <p><strong>Transport Cost:</strong> {{ purchase.delivery_cost }}</p>
+            <p><strong>Total Price:</strong> {{ purchase.total_price }}</p>
+            <p><strong>Purchase Date:</strong> {{ purchase.purchase_date|date:"M d, Y h:i A" }}</p>
+        </div>
+    </div>
+
+    <form method="POST" class="shadow p-4 bg-light rounded">
+        {% csrf_token %}
+        <h4 class="mb-3">Enter Payment Details</h4>
+        {% comment %} {{ form.as_p }} {% endcomment %}
+         <div class="mb-3">
+            <label for="id_amount" class="form-label">Amount</label>
+            <input type="number" name="amount" id="id_amount" class="form-control" 
+                    value="{{ purchase.total_price }}" readonly>
+        </div>
+        <button type="submit" class="btn btn-success">Make Payment</button>
+        <a href="{% url 'purchase_history' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

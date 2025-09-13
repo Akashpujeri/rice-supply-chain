@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Rice Post{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="fas fa-plus-circle"></i> Create Rice Post</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_quality" class="form-label">Rice Name</label>
+                    {{ form.rice_name }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_quality" class="form-label">Quality</label>
+                    {{ form.quality }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_quantity_kg" class="form-label">Quantity (kg)</label>
+                    {{ form.quantity_kg }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_price_per_kg" class="form-label">Price per kg</label>
+                    {{ form.price_per_kg }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_description" class="form-label">Description</label>
+                    {{ form.description }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_rice_image" class="form-label">Rice Image</label>
+                    {{ form.rice_image }}
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

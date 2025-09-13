@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #f9f9f9;
+        transition: all 0.2s ease-in-out;
+    }
+</style>
+
+<div class="container mt-5 mb-5">
+    <h2 class="mb-4">
+        {% if check == 1 %}
+            <span class="text-danger fw-bold">{{ manager.full_name }}'s</span> Buying History for Paddy from Dealer
+        {% else %}
+            Your Purchase History for Paddy from <span class="text-danger">Dealers</span>
+        {% endif %}
+    </h2>
+
+    {% if purchases_paddy %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-striped">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>Paddy Name</th>
+                        <th>Dealer</th>
+                        <th>Quantity (kg)</th>
+                        <th>Price/kg</th>
+                        <th>Transport Cost</th>
+                        <th>Total Price</th>
+                        <th>Date</th>
+                        <th>Payment Status</th>
+                        <th>Download Receipt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for purchase in purchases_paddy %}
+                    <tr class="text-center align-middle">
+                        <td>{{ purchase.paddy.name }}</td>
+                        <td>{{ purchase.paddy.dealer.user.username }}</td>
+                        <td>{{ purchase.quantity_purchased }}</td>
+                        <td>{{ purchase.paddy.price_per_kg }}</td>
+                        <td>{{ purchase.transport_cost }}</td>
+                        <td>{{ purchase.total_price }}</td>
+                        <td>{{ purchase.purchase_date|date:"M d, Y h:i A" }}</td>
+                        <td>
+                            {% if request.user.role == "admin" %}
+                                {% if purchase.payment %}
+                                    <span class="badge bg-success">Paid</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Unpaid</span>
+                                {% endif %}
+                            {% else %}
+                                {% if purchase.payment %}
+                                    <span class="badge bg-success">Paid</span>
+                                {% else %}
+                                    <a href="{% url 'mock_paddy_payment' purchase.id %}" class="btn btn-sm btn-primary">Mock Pay</a>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form action="{% url 'download_receipt_for_buying_paddy_for_manager' purchase.id %}" method="get">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        🧾 Download
+                                    </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No paddy purchases found.</p>
+    {% endif %}
+</div>
+
+<hr>
+
+<!-- ==================== Rice Purchase Section ==================== -->
+<div class="container mt-5">
+    <h2 class="mb-4">
+        {% if check == 1 %}
+            <span class="text-danger fw-bold">{{ manager.full_name }}'s</span> Rice Buying History from Managers
+        {% else %}
+            Your Rice Purchase History from <span class="text-danger">Other Managers</span>
+        {% endif %}
+    </h2>
+
+    {% if purchases_rice %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-striped">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>Rice Name</th>
+                        <th>Manager</th>
+                        <th>Quantity (kg)</th>
+                        <th>Price/kg</th>
+                        <th>Delivery Cost </th>
+                        <th>Total Price</th>
+                        <th>Date</th>
+                        <th>Payment</th>
+                        <th>Download Receipt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for purchase in purchases_rice %}
+                    <tr class="text-center align-middle">
+                        <td>{{ purchase.rice.rice_name }}</td>
+                        <td>{{ purchase.rice.manager.managerprofile.full_name }}</td>
+                        <td>{{ purchase.quantity_purchased }}</td>
+                        <td>{{ purchase.rice.price_per_kg }}</td>
+                        <td>{{ purchase.delivery_cost }}</td>
+                        <td>{{ purchase.total_price }}</td>
+                        <td>{{ purchase.purchase_date|date:"M d, Y h:i A" }}</td>
+                        <td>
+                            {% if request.user.role == "admin" %}
+                                {% if purchase.payment %}
+                                    <span class="badge bg-success">Paid</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Unpaid</span>
+                                {% endif %}
+                            {% else %}
+                                {% if purchase.payment %}
+                                    <span class="badge bg-success">Paid</span>
+                                {% else %}
+                                    <a href="{% url 'mock_rice_payment' purchase.id %}" class="btn btn-sm btn-primary">Mock Pay</a>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form action="{% url 'download_receipt_for_buying_rice_for_manager' purchase.id %}" method="get">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        🧾 Download
+                                    </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No rice purchases found.</p>
+    {% endif %}
+</div>
+
+<hr>
+
+<!-- ==================== Rice Sold to Customer Section ==================== -->
+<div class="container mt-5">
+    <h2 class="mb-4">
+        {% if check == 1 %}
+            <span class="text-danger fw-bold">{{ manager.full_name }}'s</span> Rice Selling History to Customers
+        {% else %}
+            Your Rice Selling History to <span class="text-danger">Customers</span>
+        {% endif %}
+    </h2>
+
+    {% if seling_rice %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-striped">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>Rice Name</th>
+                        <th>Customer</th>
+                        <th>Quantity (kg)</th>
+                        <th>Price/kg </th>
+                        <th>Delivery Cost</th>
+                        <th>Total Price</th>
+                        <th>Date</th>
+                        <th>Payment</th>
+                        <th>Download Receipt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for purchase in seling_rice %}
+                    <tr class="text-center align-middle">
+                        <td>{{ purchase.rice.rice_name }}</td>
+                        <td>
+                            {% if purchase.customer.customerprofile %}
+                                {{ purchase.customer.customerprofile.full_name }}
+                            {% else %}
+                                {{ purchase.customer.username }}
+                            {% endif %}
+                        </td>
+                        <td>{{ purchase.quantity_purchased }}</td>
+                        <td>{{ purchase.rice.price_per_kg }}</td>
+                        <td>{{ purchase.delivery_cost }}</td>
+                        <td>{{ purchase.total_price }}</td>
+                        <td>{{ purchase.purchase_date|date:"M d, Y h:i A" }}</td>
+                        <td>
+                            {% if purchase.payment %}
+                                <span class="badge bg-success">Paid</span>
+                            {% else %}
+                                <span class="badge bg-warning">Unpaid</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form action="{% url 'download_receipt_for_selling_rice_to_customer_for_manager' purchase.id %}" method="get">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        🧾 Download
+                                    </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No rice has been sold to customers yet.</p>
+    {% endif %}
+</div>
+
+<hr>
+
+<!-- ==================== Rice Sold to Other Managers Section ==================== -->
+<div class="container mt-5">
+    <h2 class="mb-4">
+        {% if check == 1 %}
+            <span class="text-danger fw-bold">{{ manager.full_name }}'s</span> Rice Selling History to Managers
+        {% else %}
+            Your Rice Selling History to <span class="text-danger">Other Managers</span>
+        {% endif %}
+    </h2>
+
+    {% if seling_rice_to_managers %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-striped">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>Rice Name</th>
+                        <th>Buyer Manager</th>
+                        <th>Quantity (kg)</th>
+                        <th>Price/kg </th>
+                        <th>Delivery Cost </th>
+                        <th>Total Price </th>
+                        <th>Date</th>
+                        <th>Payment</th>
+                        <th>Download Receipt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for purchase in seling_rice_to_managers %}
+                    <tr class="text-center align-middle">
+                        <td>{{ purchase.rice.rice_name }}</td>
+                        <td>{{ purchase.manager.managerprofile.full_name }}</td>
+                        <td>{{ purchase.quantity_purchased }}</td>
+                        <td>{{ purchase.rice.price_per_kg }}</td>
+                        <td>{{ purchase.delivery_cost }}</td>
+                        <td>{{ purchase.total_price }}</td>
+                        <td>{{ purchase.purchase_date|date:"M d, Y h:i A" }}</td>
+                        <td>
+                            {% if purchase.payment %}
+                                <span class="badge bg-success">Paid</span>
+                            {% else %}
+                                <span class="badge bg-warning">Unpaid</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form action="{% url 'download_receipt_for_selling_rice_to_others_manager_for_manager' purchase.id %}" method="get">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        🧾 Download
+                                    </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No rice has been sold to other managers yet.</p>
+    {% endif %}
+
+    <!-- Back Button -->
+    <div class="mt-4">
+        {% if request.user.role == "admin" %}
+            <a href="{% url 'see_all_manager' %}" class="btn btn-outline-success">Back to All Managers</a>
+        {% else %}
+            <a href="{% url 'manager_dashboard' %}" class="btn btn-outline-success">Back to Dashboard</a>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

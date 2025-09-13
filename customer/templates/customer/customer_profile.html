@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Customer Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-5 px-4 py-4 rounded shadow-sm" style="background-color: #f8f9fa;">
+    <h2 class="mb-4 text-primary fw-bold">
+        <i class="fas fa-user-circle me-2"></i> Customer Profile
+    </h2>
+
+    <div class="card border border-primary-subtle shadow-sm">
+        <div class="card-header bg-primary text-white fw-semibold">
+            🧾 Profile Details
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Left: Profile Info -->
+                <div class="col-md-8">
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold">👤 Full Name:</div>
+                        <div class="col-sm-8">{{ customer.full_name }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold">🆔 Username:</div>
+                        <div class="col-sm-8">{{ customer.user.username }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold">📧 Email:</div>
+                        <div class="col-sm-8">{{ customer.user.email }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold">📞 Phone:</div>
+                        <div class="col-sm-8">{{ customer.phone_number }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold">🔐 Transaction Password:</div>
+                        <div class="col-sm-8">{{ customer.Transaction_password }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold">🎂 Date of Birth:</div>
+                        <div class="col-sm-8">{{ customer.date_of_birth|date:"M d, Y" }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold">🏠 Address:</div>
+                        <div class="col-sm-8">{{ customer.address }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold">📅 Joined At:</div>
+                        <div class="col-sm-8">{{ customer.created_at|date:"F d, Y - h:i A" }}</div>
+                    </div>
+                </div>
+
+                <!-- Right: Profile Image -->
+                <div class="col-md-4 text-center">
+                    {% if customer.image %}
+                        <img src="{{ customer.image.url }}" alt="Profile Image"
+                             class="img-thumbnail shadow-sm border border-2 border-primary"
+                             style="width: 250px; height: 250px; object-fit: cover;">
+                    {% else %}
+                        <img src="{% static 'images/default_profile.png' %}" alt="Default Image"
+                             class="img-thumbnail shadow-sm border border-2 border-secondary"
+                             style="width: 250px; height: 250px; object-fit: cover;">
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mt-4 d-flex justify-content-between">
+        <a href="{% url 'customer_dashboard' %}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <a href="{% url 'update_customer_profile' %}" class="btn btn-warning">
+            <i class="fas fa-edit"></i> Edit Profile
+        </a>
+    </div>
+</div>
+{% endblock %}

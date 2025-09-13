@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Paddy Stock Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #444;
+            padding: 6px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        h1 {
+            text-align: center;
+            color:red;
+            margin-bottom: 0;
+        }
+        p {
+            text-align: center;
+            font-size: 11px;
+            margin-top: 2px;
+        }
+        h2 { text-align: center; margin-bottom: 1px; }
+        h3 { text-align: center; margin-bottom: 1px; }
+    </style>
+</head>
+<body>
+    <h1>📄 Paddy Stock Report</h1>
+    <h2>Manager: {{ manager.managerprofile.full_name }}</h2>
+    <h3>Total available paddy: {{total_paddy_stock}} Kg</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Paddy Name</th>
+                <th>Moisture Content</th>
+                <th>Quantity (kg)</th>
+                <th>Total Price/kg </th>
+                <th>Avg  price/kg </th>
+                <th>Last Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in paddy_stocks %}
+            <tr>
+                <td>{{ stock.paddy_name }}</td>
+                <td>{{ stock.moisture_content }}</td>
+                <td>{{ stock.total_quantity }}</td>
+                <td>{{ stock.total_price }}</td>
+                <td>{{ stock.average_price_per_kg }}</td>
+                <td>{{ stock.updated_at|date:"M d, Y h:i A" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

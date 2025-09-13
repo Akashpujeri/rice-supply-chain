@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <h2 class="fw-bold text-dark">Purchase Rice</h2>
+        </div>
+    </div>
+
+    <!-- Rice Details Card -->
+    <div class="card mb-5 shadow-sm border-0">
+        <div class="row g-0">
+            <div class="col-md-4">
+                {% if rice.rice_image %}
+                    <img src="{{ rice.rice_image.url }}" class="img-fluid rounded-start" alt="{{ rice.rice_name }}">
+                {% else %}
+                    <img src="{% static 'default_images/default_rice.jpg' %}" class="img-fluid rounded-start" alt="Default Rice">
+                {% endif %}
+            </div>
+            <div class="col-md-8">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-3">{{ rice.rice_name }}</h4>
+                    <p class="mb-2"><strong>Manager:</strong> {{ rice.manager.managerprofile.full_name }}</p>
+                    <p class="mb-2"><strong>Quality:</strong> {{ rice.quality }}</p>
+                    <p class="mb-2"><strong>Available Quantity:</strong> {{ rice.quantity_kg }} kg</p>
+                    <p class="mb-2"><strong>Price per kg:</strong> ৳{{ rice.price_per_kg }}</p>
+                    <p class="text-muted mt-3" style="max-height: 150px; overflow-y: auto; white-space: pre-wrap;">
+                        {{ rice.description|linebreaksbr }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Purchase Form -->
+    <div class="card shadow-sm border-0 bg-light p-4 rounded">
+        <h5 class="mb-4">Complete Your Purchase</h5>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="d-flex justify-content-end mt-3">
+                <a href="{% url 'explore_all_rice_post' %}" class="btn btn-outline-secondary me-2">Cancel</a>
+                <button type="submit" class="btn btn-success">Purchase</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

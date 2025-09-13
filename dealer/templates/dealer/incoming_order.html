@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block title %}Incoming Paddy Orders{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-primary fw-bold text-center">📦 Incoming Paddy Orders</h2>
+
+  {% if orders %}
+  <section aria-label="Paddy Order List" class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>Manager</th>
+          <th>Paddy Name</th>
+          <th>Quantity (kg)</th>
+          <th>Total Price</th>
+          <th>Status</th>
+          <th>Purchase Date</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+        <tr>
+          <td>{{ order.manager.managerprofile.full_name }}</td>
+          <td>{{ order.paddy.name }}</td>
+          <td>{{ order.quantity_purchased }}</td>
+          <td>{{ order.total_price }}</td>
+          <td>
+            {% if order.status == "Pending" %}
+              <span class="badge bg-warning text-dark">{{ order.status }}</span>
+            {% elif order.status == "Accepted" %}
+              <span class="badge bg-primary">{{ order.status }}</span>
+            {% elif order.status == "Shipping" %}
+              <span class="badge bg-info">{{ order.status }}</span>
+            {% elif order.status == "Delivered" %}
+              <span class="badge bg-success">{{ order.status }}</span>
+            {% elif order.status == "Successful" %}
+              <span class="badge bg-success">Completed</span>
+            {% elif order.status == "Cancel" %}
+              <span class="badge bg-danger">{{ order.status }}</span>
+            {% else %}
+              <span class="badge bg-secondary">{{ order.status }}</span>
+            {% endif %}
+          </td>
+          <td>{{ order.purchase_date|date:"Y-m-d H:i" }}</td>
+          <td>
+            {% if order.status == "Pending" %}
+            <form method="post" action="{% url 'accept_paddy_order' order.id %}">
+              {% csrf_token %}
+              <form method="post" action="{% url 'accept_rice_order_from_customer' order.id %}">
+                  {% csrf_token %}
+                  <select name="new_status" class="form-select form-select-sm" onchange="this.form.submit()">
+                      <option disabled selected>Update Status</option>
+                      <option value="Accepted">Accept</option>
+                      <option value="Cancel">Cancel</option>
+                  </select>                  
+            </form>
+
+            {% elif order.status == "Accepted" or order.status == "Shipping" %}
+            <form method="post" action="{% url 'update_order_status_for_paddy' order.id %}">
+              {% csrf_token %}
+              <select
+                name="new_status"
+                class="form-select form-select-sm"
+                onchange="if (this.value === 'Cancel' && !confirm('Are you sure you want to cancel this order?')) { this.selectedIndex = 0; return; } this.form.submit();"
+                required
+              >
+                <option value="" disabled selected>Update Status</option>
+                {% if order.status == "Accepted" %}
+                  <option value="Shipping">Mark as Shipping</option>
+                  <option value="Cancel">Cancel</option>
+                {% elif order.status == "Shipping" %}
+                  <option value="Delivered">Mark as Delivered</option>
+                {% endif %}
+              </select>
+            </form>
+
+            {% elif order.status == "Successful" or order.status == "Delivered" %}
+              <span class="badge bg-success">Completed</span>
+            {% else %}
+              <span class="badge bg-secondary">{{ order.status }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  {% else %}
+    <div class="alert alert-warning text-center">
+      🚫 No paddy orders available.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

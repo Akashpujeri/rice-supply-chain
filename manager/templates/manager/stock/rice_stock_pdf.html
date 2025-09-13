@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">🌾 Your Rice Stock Overview</h2>
+
+    {% if rice_stocks %}
+        <table class="table table-bordered table-hover table-striped shadow">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>Rice Name</th>
+                    <th>Quality</th>
+                    <th>Type</th>
+                    <th>Quantity (kg)</th>
+                    <th>Total Price </th>
+                    <th>Avg Price/kg </th>
+                    <th>Last Updated</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                {% for stock in rice_stocks %}
+                <tr>
+                    <td>{{ stock.rice_name }}</td>
+                    <td>{{ stock.quality }}</td>
+                    <td>{{ stock.rice_type }}</td>
+                    <td>{{ stock.stock_quantity }}</td>
+                    <td>{{ stock.total_price }}</td>
+                    <td>{{ stock.average_price_per_kg }}</td>
+                    <td>{{ stock.updated_at|date:"M d, Y h:i A" }}</td>
+                    <td class="d-flex justify-content-center gap-2">
+                        <form action="{% url 'create_rice_post' stock.id %}" method="get">
+                            <button type="submit" class="btn btn-sm btn-primary">📤 Post to marketplace</button>
+                        </form>
+                        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal{{ stock.id }}">
+                            ✏️ Edit
+                        </button>
+                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ stock.id }}">
+                            🗑️ Delete
+                        </button>
+
+                        <!-- Edit Modal -->
+                        <div class="modal fade" id="editModal{{ stock.id }}" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <form method="post" action="{% url 'edit_rice_stock' stock.id %}">
+                                        {% csrf_token %}
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Edit {{ stock.rice_name }} Stock</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-2">
+                                                <label class="form-label text-start d-block">Rice Name</label>
+                                                <input type="text" name="rice_name" value="{{ stock.rice_name }}" class="form-control" required>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label text-start d-block">Quality</label>
+                                                <input type="text" name="quality" value="{{ stock.quality }}" class="form-control">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label text-start d-block">Rice Type</label>
+                                                <input type="text" name="rice_type" value="{{ stock.rice_type }}" class="form-control">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label text-start d-block">Quantity (kg)</label>
+                                                <input type="number" step="0.1" name="stock_quantity" value="{{ stock.stock_quantity }}" class="form-control" required>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label text-start d-block">Average Price/kg </label>
+                                                <input type="number" step="0.01" name="average_price_per_kg" value="{{ stock.average_price_per_kg }}" class="form-control" required>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label text-start d-block">Total Price </label>
+                                                <input type="number" step="0.01" name="total_price" value="{{ stock.total_price }}" class="form-control" required>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-success">Save Changes</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delete Modal -->
+                        <div class="modal fade" id="deleteModal{{ stock.id }}" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <form method="post" action="{% url 'delete_rice_stock' stock.id %}">
+                                        {% csrf_token %}
+                                        <div class="modal-header">
+                                            <h5 class="modal-title text-danger">⚠️ Confirm Deletion</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete <strong>{{ stock.rice_name }}</strong>?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-warning">No rice stock available.</div>
+    {% endif %}
+
+    <div class="mt-4 d-flex justify-content-between">
+        <a href="{% url 'manager_stock_management' %}" class="btn btn-primary my-1">🔙 Back</a>
+
+        <button class="btn btn-warning my-1" data-bs-toggle="modal" data-bs-target="#addRiceModal">
+            ➕ Add New Rice Stock
+        </button>
+
+        <form action="{% url 'download_rice_stock_report' %}" method="get" class="mb-3">
+            <button type="submit" class="btn btn-danger">
+                🧾 Download Rice Stock Report (PDF)
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Add Rice Stock Modal -->
+<div class="modal fade" id="addRiceModal" tabindex="-1" aria-labelledby="addRiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" action="{% url 'rice_stock_update' %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addRiceModalLabel">➕ Add New Rice Stock</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label class="form-label">Rice Name</label>
+                        <input type="text" name="rice_name" class="form-control" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Quality</label>
+                        <input type="text" name="quality" class="form-control">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Rice Type</label>
+                        <input type="text" name="rice_type" class="form-control">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Quantity (kg)</label>
+                        <input type="number" step="0.1" name="stock_quantity" class="form-control" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Average Price/kg </label>
+                        <input type="number" step="0.01" name="average_price_per_kg" class="form-control" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Total Price </label>
+                        <input type="number" step="0.01" name="total_price" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">✅ Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

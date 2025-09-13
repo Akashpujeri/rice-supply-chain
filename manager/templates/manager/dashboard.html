@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% block title %}Manager Dashboard{% endblock title %}
+{% load static %}
+
+{% block content %}
+<!-- Animate.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<!-- AOS CSS -->
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+<style>
+    /* Section Title with Gradient */
+    .dashboard-title {
+        font-weight: 800;
+        font-size: 2rem;
+        background: linear-gradient(90deg, #0d6efd, #6610f2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        margin-bottom: 40px;
+        text-shadow: 0 3px 12px rgba(0,0,0,0.15);
+    }
+
+    /* Dashboard Card */
+    .dashboard-card {
+        border-radius: 15px;
+        transition: all 0.4s ease-in-out;
+        background: #fff;
+        overflow: hidden;
+        transform: translateY(0);
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+
+    /* Dashboard Icon */
+    .dashboard-icon {
+        font-size: 1.5rem;
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+
+    /* Small text */
+    .text-small {
+        font-size: 0.95rem;
+        color: #6c757d;
+    }
+
+    /* Button Ripple Effect */
+    .dashboard-btn {
+        transition: all 0.3s ease;
+        border-radius: 30px;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .dashboard-btn::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255,255,255,0.4);
+        border-radius: 100%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+        z-index: -1;
+    }
+
+    .dashboard-btn:hover::after {
+        width: 300%;
+        height: 300%;
+    }
+</style>
+
+<div class="container mt-5">
+    <!-- Title -->
+    <h2 class="dashboard-title animate__animated animate__fadeInDown">
+        👨‍🏭 Welcome to the <strong>Manager Dashboard</strong>
+    </h2>
+
+    <div class="row g-4">
+        <!-- Profile -->
+        <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="100">
+            <div class="card dashboard-card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><span class="dashboard-icon">📝</span>Profile</h5>
+                    <p class="text-small">View or update your profile details.</p>
+                    <a href="{% url 'manager_profile' %}" class="btn btn-primary btn-sm dashboard-btn me-2">View</a>
+                    <a href="{% url 'update_manager_profile' %}" class="btn btn-outline-secondary btn-sm dashboard-btn">Edit</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Rice Posts -->
+        <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="200">
+            <div class="card dashboard-card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><span class="dashboard-icon">📃</span>My Rice Posts</h5>
+                    <p class="text-small">Manage your published rice posts.</p>
+                    <a href="{% url 'show_my_rice_post' %}" class="btn btn-info btn-sm dashboard-btn">Manage Posts</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Explore All Rice Posts -->
+        <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="300">
+            <div class="card dashboard-card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><span class="dashboard-icon">🌾</span>Explore All Rice Posts</h5>
+                    <p class="text-small">Browse available rice posts in the market.</p>
+                    <a href="{% url 'explore_all_rice_post' %}" class="btn btn-secondary btn-sm dashboard-btn">Explore</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Explore Paddy Post -->
+        <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="400">
+            <div class="card dashboard-card shadow-sm h-100 border-danger">
+                <div class="card-body">
+                    <h5 class="card-title text-danger"><span class="dashboard-icon">🌾</span>Explore Paddy Posts</h5>
+                    <p class="text-small">See all paddy posts by dealers.</p>
+                    <a href="{% url 'explore_paddy_post' %}" class="btn btn-danger btn-sm dashboard-btn">Explore</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Incoming Orders -->
+        <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="500">
+            <div class="card dashboard-card shadow-sm h-100 border-success">
+                <div class="card-body">
+                    <h5 class="card-title"><span class="dashboard-icon">📬</span>Incoming Orders</h5>
+                    <p class="text-small">View all orders from customers or dealers.</p>
+                    <a href="{% url 'incoming_order' %}" class="btn btn-warning btn-sm dashboard-btn">View Orders</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Paddy Orders -->
+        <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="600">
+            <div class="card dashboard-card shadow-sm h-100 border-info">
+                <div class="card-body">
+                    <h5 class="card-title text-info"><span class="dashboard-icon">🛒</span>My Paddy Orders</h5>
+                    <p class="text-small">Check your paddy purchase records.</p>
+                    <a href="{% url 'my_paddy_order' %}" class="btn btn-info btn-sm dashboard-btn">View History</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Rice Orders -->
+        <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="700">
+            <div class="card dashboard-card shadow-sm h-100 border-info">
+                <div class="card-body">
+                    <h5 class="card-title text-info"><span class="dashboard-icon">🛒</span>My Rice Orders</h5>
+                    <p class="text-small">Check your rice purchase records.</p>
+                    <a href="{% url 'my_rice_order' %}" class="btn btn-info btn-sm dashboard-btn">View History</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchase History -->
+        <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="800">
+            <div class="card dashboard-card shadow-sm h-100 border-info">
+                <div class="card-body">
+                    <h5 class="card-title text-info"><span class="dashboard-icon">📊</span>Purchase History</h5>
+                    <p class="text-small">Overview of paddy, rice purchases, and sales.</p>
+                    <a href="{% url 'purchase_history' %}" class="btn btn-info btn-sm dashboard-btn">Full History</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manager Stock Management -->
+        <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="900">
+            <div class="card dashboard-card shadow-sm h-100 border-primary">
+                <div class="card-body">
+                    <h5 class="card-title text-primary"><span class="dashboard-icon">📦</span>My Stock</h5>
+                    <p class="text-small">Overview of paddy, rice stock, and profit and loss.</p>
+                    <a href="{% url 'manager_stock_management' %}" class="btn btn-primary btn-sm dashboard-btn">Full History</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AOS JS -->
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 1000,
+    once: true
+  });
+</script>
+{% endblock content %}

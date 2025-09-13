@@ -1,0 +1,57 @@
+<!-- templates/manager/explore_paddy_post.html -->
+{% extends "base.html" %} {% load static %} {% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Explore Available Paddy Stock</h2>
+
+  {% if paddy_stocks %}
+  <div class="row">
+    {% for stock in paddy_stocks %}
+    <div class="col-md-6 col-lg-4 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title">Dealer: {{ stock.dealer.user.username }}</h5>
+          <p class="card-text">
+            <strong>Quantity:</strong> {{ stock.quantity }} kg
+          </p>
+          <p class="card-text">
+            <strong>Moisture:</strong> {{ stock.moisture_content }}%
+          </p>
+          <p class="card-text">
+            <strong>Price/Mon:</strong> {{ stock.price_per_mon }}
+          </p>
+          <p class="card-text">
+            <strong>Stored Since:</strong> {{ stock.stored_since|date:"M d, Y,
+            h:i A" }}
+          </p>
+          <p class="card-text">
+            <strong>Status:</strong>
+            {% if stock.is_available %}
+            <span class="badge bg-success">Available</span>
+            {% else %}
+            <span class="badge bg-danger">Sold</span>
+            {% endif %}
+          </p>
+          <p class="card-text">
+            <strong>Notes:</strong> {{
+            stock.quality_notes|default:"N/A"|truncatechars:100}}
+          </p>
+          {% if stock.is_available %}
+          <a
+            href="{% url 'purchase_paddy' stock.id %}"
+            class="btn btn-primary btn-block"
+            >Purchase</a
+          >
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="alert alert-info text-center">
+    No paddy stock available right now. Please check back later.
+  </div>
+  {% endif %}
+  <a href="{% url 'manager_dashboard' %}" class="btn btn-success">Back</a>
+</div>
+{% endblock %}

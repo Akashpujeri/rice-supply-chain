@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock title %}
+
+{% block content %}
+<!-- Animate.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<!-- AOS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
+<style>
+    /* Background with gradient */
+    body {
+        background: linear-gradient(135deg, #f8f9fa, #e3f2fd);
+    }
+
+    /* Section title with gradient text */
+    .section-title {
+        font-weight: 800;
+        font-size: 2rem;
+        background: linear-gradient(90deg, #0d6efd, #6610f2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        margin-bottom: 40px;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    /* Dashboard card styles */
+    .dashboard-card {
+        border-radius: 15px;
+        transition: all 0.4s ease-in-out;
+        transform: translateY(0);
+        background: #fff;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Floating animation on hover */
+    .dashboard-card:hover {
+        transform: translateY(-12px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+
+    /* Button animation */
+    .dashboard-btn {
+        transition: all 0.3s ease;
+        border-radius: 30px;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    /* Ripple hover effect */
+    .dashboard-btn::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255,255,255,0.4);
+        border-radius: 100%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+        z-index: -1;
+    }
+
+    .dashboard-btn:hover::after {
+        width: 300%;
+        height: 300%;
+    }
+</style>
+
+<div class="container mt-5 mb-5">
+    <h2 class="section-title animate__animated animate__fadeInDown">👨‍🏭 Welcome to the Admin Dashboard</h2>
+
+    <div class="row g-4">
+        <!-- Admin Profile -->
+        <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="100">
+            <div class="card dashboard-card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title">📝 Profile</h5>
+                    <p class="card-text">View or update your admin profile details.</p>
+                    <a href="{% url 'admin_profile' %}" class="btn btn-primary dashboard-btn me-2">View Profile</a>
+                    <a href="{% url 'update_admin_profile' %}" class="btn btn-outline-secondary dashboard-btn">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rice Posts -->
+        <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="200">
+            <div class="card dashboard-card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title">📃 Manage Rice Posts</h5>
+                    <p class="card-text">View, update, or delete manager rice posts.</p>
+                    <a href="{% url 'explore_all_rice_post' %}" class="btn btn-info text-white dashboard-btn">Manage Posts</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Paddy Posts -->
+        <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="300">
+            <div class="card dashboard-card shadow-sm border-0 h-100 border-start border-danger border-4">
+                <div class="card-body">
+                    <h5 class="card-title text-danger">🌾 Explore Paddy Posts</h5>
+                    <p class="card-text">View all posted paddy from dealers.</p>
+                    <a href="{% url 'marketplace_paddy_posts' %}" class="btn btn-danger dashboard-btn">Explore</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dealers -->
+        <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="400">
+            <div class="card dashboard-card shadow-sm border-0 h-100 border-start border-warning border-4">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">👨‍🌾 All Dealers</h5>
+                    <p class="card-text">See all registered dealers in the system.</p>
+                    <a href="{% url 'see_all_delears' %}" class="btn btn-warning text-white dashboard-btn">Explore</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Managers -->
+        <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="500">
+            <div class="card dashboard-card shadow-sm border-0 h-100 border-start border-primary border-4">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">📦 All Managers</h5>
+                    <p class="card-text">See all registered rice managers.</p>
+                    <a href="{% url 'see_all_manager' %}" class="btn btn-primary dashboard-btn">Explore</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customers -->
+        <div class="col-md-6 col-lg-4" data-aos="zoom-in" data-aos-delay="600">
+            <div class="card dashboard-card shadow-sm border-0 h-100 border-start border-success border-4">
+                <div class="card-body">
+                    <h5 class="card-title text-success">👥 All Customers</h5>
+                    <p class="card-text">See all registered customers.</p>
+                    <a href="{% url 'see_all_customers' %}" class="btn btn-success dashboard-btn">Explore</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AOS Init -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script>
+    AOS.init({
+        duration: 1000,
+        once: true
+    });
+</script>
+{% endblock content %}

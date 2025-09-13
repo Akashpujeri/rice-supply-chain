@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}About Us{% endblock title %}
+
+{% block content %}
+<!-- AOS CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
+<div class="container mt-5">
+    <!-- Animated Heading -->
+    <div class="text-center mb-5" data-aos="fade-down">
+        <h1 class="fw-bold display-5 animated-heading">About Us</h1>
+        <p class="text-muted fs-5" data-aos="fade-up" data-aos-delay="200">
+            Empowering the rice supply chain through technology & transparency
+        </p>
+    </div>
+
+    <!-- About Description -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-10" data-aos="fade-up">
+            <p class="lead">
+                Our <strong>Rice Supply Chain Management System</strong> solves key challenges in rural rice trading: 
+                <em>poor pricing transparency, inefficient logistics, and manual transaction records</em>.  
+                We connect farmers, mill managers, dealers, and customers seamlessly — ensuring 
+                <strong>fair trade, efficient logistics, and trustworthy transactions</strong>.
+            </p>
+            <p>
+                By integrating digital solutions into agriculture, we aim to <strong>empower local communities</strong>, 
+                improve farmer livelihoods, and create a sustainable & transparent food distribution chain.  
+                This project reflects our commitment to <span class="text-success fw-bold">innovation in agriculture</span>.
+            </p>
+        </div>
+    </div>
+
+    <!-- Mission / Vision / Values -->
+    <div class="row text-center g-4">
+        <div class="col-md-4" data-aos="zoom-in" data-aos-delay="100">
+            <div class="p-4 shadow-lg rounded bg-light h-100 hover-card">
+                <i class="fas fa-bullseye fa-3x text-success mb-3"></i>
+                <h4 class="fw-bold">Our Mission</h4>
+                <p>To connect stakeholders in the rice industry through a transparent, efficient, and fair digital platform.</p>
+            </div>
+        </div>
+        <div class="col-md-4" data-aos="zoom-in" data-aos-delay="200">
+            <div class="p-4 shadow-lg rounded bg-light h-100 hover-card">
+                <i class="fas fa-eye fa-3x text-primary mb-3"></i>
+                <h4 class="fw-bold">Our Vision</h4>
+                <p>To build a sustainable rice trading ecosystem that benefits farmers, managers, and consumers equally.</p>
+            </div>
+        </div>
+        <div class="col-md-4" data-aos="zoom-in" data-aos-delay="300">
+            <div class="p-4 shadow-lg rounded bg-light h-100 hover-card">
+                <i class="fas fa-handshake fa-3x text-warning mb-3"></i>
+                <h4 class="fw-bold">Our Values</h4>
+                <p>Fairness, transparency, innovation, and empowering rural communities with technology.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team / Commitment Section -->
+    <div class="row mt-5 align-items-center">
+        <div class="col-md-6" data-aos="fade-right">
+            <div class="image-wrapper">
+                <img src="{% static 'default_images/rice_field.jpg' %}" alt="Rice Field" class="img-fluid rounded shadow-lg hover-image">
+                <div class="image-overlay"></div>
+            </div>
+        </div>
+        <div class="col-md-6" data-aos="fade-left">
+            <h2 class="fw-bold text-primary">Our Commitment</h2>
+            <p class="fs-5">
+                We are dedicated to supporting the agriculture sector with smart digital tools.  
+                Every transaction is <strong>recorded, transparent, and secure</strong>, 
+                enabling better decision-making for farmers, managers, and customers.
+            </p>
+            <p class="text-muted">Together, we can build a sustainable food ecosystem for the future.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS -->
+<style>
+    /* Typing + Glow Heading */
+    .animated-heading {
+        display: inline-block;
+        font-size: 2.8rem;
+        white-space: nowrap;
+        border-right: 3px solid #007bff;
+        overflow: hidden;
+        width: 0;
+        animation: typing 3s steps(30, end) forwards, blink 0.7s infinite, glow 2s infinite alternate;
+    }
+    @keyframes typing { from { width: 0 } to { width: 9ch; } } /* "About Us" */
+    @keyframes blink { 50% { border-color: transparent; } }
+    @keyframes glow {
+        from { text-shadow: 0 0 5px #007bff, 0 0 10px #00c3ff; }
+        to { text-shadow: 0 0 15px #00c3ff, 0 0 30px #007bff; }
+    }
+
+    /* Hover effects */
+    .hover-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .hover-card:hover {
+        transform: translateY(-8px) scale(1.03);
+        box-shadow: 0px 10px 30px rgba(0,0,0,0.15);
+    }
+    .hover-image {
+        transition: transform 0.5s ease, filter 0.5s ease;
+    }
+    .hover-image:hover {
+        transform: scale(1.05);
+        filter: brightness(1.1);
+    }
+
+    /* Overlay for image */
+    .image-wrapper {
+        position: relative;
+        overflow: hidden;
+    }
+    .image-overlay {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 123, 255, 0.2);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+    .image-wrapper:hover .image-overlay {
+        opacity: 1;
+    }
+</style>
+
+<!-- AOS JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script>
+    AOS.init({
+        duration: 1000,
+        once: true,
+        offset: 100
+    });
+</script>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+{% endblock content %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Customer Details{% endblock title %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Customer Profile Card -->
+    <div class="card shadow-lg border-0">
+        <div class="row g-0">
+            <!-- Image Section -->
+            <div class="col-md-4 text-center bg-light p-4">
+                <img src="{% if customer.image %}{{ customer.image.url }}{% else %}{% static 'default_images/default_customer.png' %}{% endif %}"
+                     alt="Customer Image"
+                     class="img-fluid rounded border shadow-sm"
+                     style="width: 100%; max-height: 300px; object-fit: cover;">
+            </div>
+
+            <!-- Info Section -->
+            <div class="col-md-8">
+                <div class="card-body p-4">
+                    <h3 class="card-title text-primary mb-4">{{ customer.full_name }}</h3>
+
+                    <ul class="list-unstyled fs-6">
+                        <li><strong>Email:</strong> {{ customer.user.email }}</li>
+                        <li><strong>Phone:</strong> {{ customer.phone_number }}</li>
+                        <li><strong>Address:</strong> {{ customer.address }}</li>
+                        <li><strong>Date of Birth:</strong> {{ customer.date_of_birth|default:"Not Provided" }}</li>
+                        <li><strong>Joined:</strong> {{ customer.created_at|date:"F d, Y" }}</li>
+                    </ul>
+
+                    <div class="d-flex gap-3 mt-4">
+                        <a href="{% url 'customer_rice_purchases_history_seen_by_admin' customer.id %}" class="btn btn-outline-primary btn-lg">
+                            📜 View Purchase History
+                        </a>
+                        <a href="{% url 'see_all_customers' %}" class="btn btn-outline-secondary btn-lg">
+                            ⬅ Back to Customer List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Optional Custom Styling -->
+<style>
+    .btn {
+        transition: all 0.3s ease;
+    }
+    .btn:hover {
+        transform: scale(1.03);
+    }
+</style>
+{% endblock content %}

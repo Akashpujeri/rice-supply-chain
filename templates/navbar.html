@@ -1,0 +1,120 @@
+<!-- navbar.html -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
+    <div class="container">
+        <!-- Brand Logo -->
+        <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+            <i class="fas fa-seedling text-success"></i> RSCMS
+        </a>
+
+        <!-- Navbar Toggler for Mobile -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar Links -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+
+                {% if request.user.is_authenticated %}
+                    <li class="nav-item">
+                        {% if request.user.role == "manager" %}
+                            <a class="nav-link {% if request.resolver_match.url_name == 'manager_dashboard' %}active{% endif %}" href="{% url 'manager_dashboard' %}">
+                                <i class="fas fa-home"></i> Home
+                            </a>
+                        {% elif request.user.role == "customer" %}
+                            <a class="nav-link {% if request.resolver_match.url_name == 'customer_dashboard' %}active{% endif %}" href="{% url 'customer_dashboard' %}">
+                                <i class="fas fa-home"></i> Home
+                            </a>
+                        {% elif request.user.role == "dealer" %}
+                            <a class="nav-link {% if request.resolver_match.url_name == 'dealer_dashboard' %}active{% endif %}" href="{% url 'dealer_dashboard' %}">
+                                <i class="fas fa-home"></i> Home
+                            </a>
+                        {% elif request.user.role == "admin" %}
+                            <a class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}" href="{% url 'admin_dashboard' %}">
+                                <i class="fas fa-home"></i> Home
+                            </a>
+                        {% endif %}
+                    </li>
+                {% endif %}
+
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'about' %}">
+                        <i class="fas fa-info-circle"></i> About
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'services' %}active{% endif %}" href="{% url 'services' %}">
+                        <i class="fas fa-cogs"></i> Services
+                    </a>
+                </li>
+
+                <!-- Help/Support Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {% if request.resolver_match.url_name in 'faq documentation contact_support' %}active{% endif %}" 
+                       href="#" id="helpDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-question-circle"></i> Help
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="helpDropdown">
+                        <li><a class="dropdown-item" href="{% url 'contact_support' %}"><i class="fas fa-envelope"></i> Contact Support</a></li>
+                    </ul>
+                </li>
+
+            </ul>
+
+            <!-- Search Bar -->
+            <form class="d-flex me-3" action="{% url 'search' %}" method="get">
+                <input class="form-control me-2" type="search" placeholder="Search..." aria-label="Search" name="query" id="search">
+                <button class="btn btn-outline-success" type="submit"><i class="fas fa-search"></i></button>
+            </form>
+
+            <!-- User Authentication Dropdown -->
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle me-1"></i>
+                        {% if request.user.is_authenticated %}
+                            {{ request.user.username }}
+                        {% else %}
+                            Account
+                        {% endif %}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
+                        {% if request.user.is_authenticated %}
+                            <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                                <i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                            <li><a class="dropdown-item text-info" href="{% url 'change_password' %}">
+                                <i class="fas fa-key"></i> Change Password</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user"></i> Profile</a></li>
+                        {% else %}
+                            <li><a class="dropdown-item" href="{% url 'register' %}">
+                                <i class="fas fa-user-plus"></i> Register</a></li>
+                            <li><a class="dropdown-item" href="{% url 'login' %}">
+                                <i class="fas fa-sign-in-alt"></i> Login</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Some CSS for hover/active effect -->
+<style>
+    .navbar .nav-link {
+        transition: all 0.3s ease;
+    }
+    .navbar .nav-link:hover {
+        color: #00ff88 !important;
+        transform: translateY(-2px);
+    }
+    .navbar .nav-link.active {
+        font-weight: bold;
+        color: #00ff88 !important;
+    }
+    .dropdown-menu {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+</style>

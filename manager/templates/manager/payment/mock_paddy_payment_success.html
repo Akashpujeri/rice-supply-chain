@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container text-center mt-5">
+    <h2 class="text-success">✅ Payment Successful!</h2>
+    <p>Your payment has been successfully processed.</p>
+    <a href="{% url 'my_paddy_order' %}" class="btn btn-primary mt-3">View Paddy Order</a>
+</div>
+{% endblock %}

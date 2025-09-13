@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <!-- Title -->
+            <div class="text-center mb-4">
+                <h2 class="fw-bold">💳 Mock Payment for <span class="text-primary">{{ purchase.paddy.name }}</span></h2>
+            </div>
+
+            <!-- Payment Summary Card -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-dark text-white fw-semibold">
+                    Payment Summary
+                </div>
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-6 text-muted">Dealer:</div>
+                        <div class="col-6">{{ purchase.paddy.dealer.user.username }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6 text-muted">Quantity Purchased:</div>
+                        <div class="col-6">{{ purchase.quantity_purchased }} kg</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6 text-muted">Price/kg:</div>
+                        <div class="col-6">{{ purchase.paddy.price_per_kg }}</div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6 text-muted">Transport Cost:</div>
+                        <div class="col-6">{{ purchase.transport_cost }}</div>
+                    </div>
+                    <hr>
+                    <div class="row mb-2 fw-bold">
+                        <div class="col-6">Total Price:</div>
+                        <div class="col-6 text-success">{{ purchase.total_price }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 text-muted">Purchase Date:</div>
+                        <div class="col-6">{{ purchase.purchase_date|date:"M d, Y h:i A" }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Form -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light fw-semibold">
+                    Enter Payment Details
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {% comment %} {{ form.as_p }} {% endcomment %}
+                         <div class="mb-3">
+                            <label for="id_amount" class="form-label">Amount</label>
+                            <input type="number" name="amount" id="id_amount" class="form-control" 
+                                value="{{ purchase.total_price }}" readonly>
+                        </div>
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'purchase_history' %}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">💰 Make Payment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

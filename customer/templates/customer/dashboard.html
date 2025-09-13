@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Customer Dashboard{% endblock title %}
+
+{% block content %}
+<div class="container mt-5 py-4 px-4 rounded" style="background-color: #f8f9fa;">
+    <h2 class="mb-4 fw-bold text-primary">👋 Welcome to Your Customer Dashboard</h2>
+
+    <div class="row g-4">
+        <!-- Profile -->
+        <div class="col-md-6">
+            <div class="card border shadow-sm h-100 transition-hover" style="background-color: #ffffff;">
+                <div class="card-body">
+                    <h5 class="card-title">👤 Profile</h5>
+                    <p class="card-text text-muted">View or update your profile information and personal details.</p>
+                    <a href="{% url 'customer_profile' %}" class="btn btn-primary me-2">View Profile</a>
+                    <a href="{% url 'update_customer_profile' %}" class="btn btn-outline-secondary">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Explore Rice Posts -->
+        <div class="col-md-6">
+            <div class="card border shadow-sm h-100 transition-hover" style="background-color: #ffffff;">
+                <div class="card-body">
+                    <h5 class="card-title">🌾 Explore Rice Posts</h5>
+                    <p class="card-text text-muted">Browse all rice posts available in the marketplace.</p>
+                    <a href="{% url 'explore_all_rice_post' %}" class="btn btn-success">Explore</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Orders -->
+        <div class="col-md-6">
+            <div class="card border shadow-sm h-100 transition-hover" style="background-color: #ffffff;">
+                <div class="card-body">
+                    <h5 class="card-title">📦 My Rice Orders</h5>
+                    <p class="card-text text-muted">Track and manage your placed rice orders.</p>
+                    <a href="{% url 'my_order_page' %}" class="btn btn-warning text-white">View Orders</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchase History -->
+        <div class="col-md-6">
+            <div class="card border shadow-sm h-100 transition-hover" style="background-color: #ffffff;">
+                <div class="card-body">
+                    <h5 class="card-title">📜 Purchase History</h5>
+                    <p class="card-text text-muted">Review your rice purchase history and details.</p>
+                    <a href="{% url 'rice_purchases_history' %}" class="btn btn-info text-white">View History</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .transition-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .transition-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
+    }
+</style>
+{% endblock content %}

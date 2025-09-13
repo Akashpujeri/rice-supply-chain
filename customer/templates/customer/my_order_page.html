@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}My Rice Orders{% endblock %}
+
+{% block content %}
+<div class="container mt-5 px-4 py-4 rounded shadow-sm" style="background-color: #f8f9fa;">
+    <h2 class="mb-4 fw-bold text-primary">🛒 My Rice Orders</h2>
+
+    {% if orders %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle text-center bg-white">
+                <thead class="table-dark">
+                    <tr>
+                        <th>👨‍🌾 Manager</th>
+                        <th>🌾 Rice</th>
+                        <th>⚖️ Quantity (kg)</th>
+                        <th>💰 Total Price </th>
+                        <th>🚚 Status</th>
+                        <th>📅 Purchase Date</th>
+                        <th>💳 Payment</th>
+                        <th>🔧 Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        {% if order.status != "Successful" %}
+                        <tr>
+                            <td>{{ order.rice.manager.managerprofile.full_name }}</td>
+                            <td>{{ order.rice.rice_name }}</td>
+                            <td>{{ order.quantity_purchased }}</td>
+                            <td>{{ order.total_price }}</td>
+                            <td>
+                                {% if order.status == "Cancel" %}
+                                    <span class="badge bg-danger">{{ order.status }}</span>
+                                {% else %}
+                                    <span class="badge bg-info">{{ order.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ order.purchase_date|date:"M d, Y h:i A" }}</td>
+                            <td>
+                                {% if order.payment %}
+                                    <span class="badge bg-success">Paid</span>
+                                {% elif order.status == "Cancel" %}
+                                    <span class="badge bg-secondary">N/A</span>
+                                {% else %}
+                                    <a href="{% url 'mock_customer_rice_payment' order.id %}" class="btn btn-sm btn-outline-primary">Pay Now</a>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if order.status == "Delivered" %}
+                                    {% if order.payment %}
+                                        <form method="post" action="{% url 'confirm_delivery' order.id %}">
+                                            {% csrf_token %}
+                                            <button class="btn btn-sm btn-success">Confirm Delivery</button>
+                                        </form>
+                                    {% else %}
+                                        <a href="{% url 'mock_customer_rice_payment' order.id %}" class="btn btn-sm btn-warning">Complete Payment</a>
+                                    {% endif %}
+                                {% elif order.status == "Cancel" %}
+                                    {% if order.payment %}
+                                        <span class="btn btn-sm btn-secondary" disabled>Refunding</span>
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            You haven't ordered any rice yet.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

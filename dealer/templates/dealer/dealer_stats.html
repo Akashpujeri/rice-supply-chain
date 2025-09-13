@@ -1,0 +1,538 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Dealer Statistics |
+AgriConnect{% endblock %} {% block content %}
+<div class="container-fluid px-4 py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">
+      <i class="fas fa-chart-line text-primary me-2"></i>Your Performance
+      Statistics
+    </h2>
+    <a href="{% url 'dealer_dashboard' %}" class="btn btn-outline-secondary">
+      <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+    </a>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-start-primary shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col me-2">
+              <div class="text-xs fw-bold text-primary text-uppercase mb-1">
+                Total Sales (30 Days)
+              </div>
+              <div class="h5 mb-0 fw-bold text-gray-800">
+                ৳{{ total_sales|floatformat:2 }}
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-start-success shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col me-2">
+              <div class="text-xs fw-bold text-success text-uppercase mb-1">
+                Completed Orders
+              </div>
+              <div class="h5 mb-0 fw-bold text-gray-800">
+                {{ completed_orders }}
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-start-info shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col me-2">
+              <div class="text-xs fw-bold text-info text-uppercase mb-1">
+                Stock Sold (30 Days)
+              </div>
+              <div class="h5 mb-0 fw-bold text-gray-800">
+                {{ total_quantity_sold }} units
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-weight fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-start-warning shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col me-2">
+              <div class="text-xs fw-bold text-warning text-uppercase mb-1">
+                Conversion Rate
+              </div>
+              <div class="h5 mb-0 fw-bold text-gray-800">
+                {{ conversion_rate }}%
+              </div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-percentage fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="row mb-4">
+    <!-- Sales Chart -->
+    <div class="col-lg-8 mb-4">
+      <div class="card shadow h-100">
+        <div
+          class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-white"
+        >
+          <h6 class="m-0 fw-bold text-primary">
+            <i class="fas fa-chart-bar me-2"></i>Monthly Sales & Quantity
+          </h6>
+          <div class="dropdown no-arrow">
+            <select class="form-select form-select-sm" id="salesTimeRange">
+              <option value="7">Last 7 Days</option>
+              <option value="30" selected>Last 30 Days</option>
+              <option value="90">Last 3 Months</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body">
+          <canvas id="salesChart" height="300"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Varieties -->
+    <div class="col-lg-4 mb-4">
+      <div class="card shadow h-100">
+        <div class="card-header py-3 bg-white">
+          <h6 class="m-0 fw-bold text-primary">
+            <i class="fas fa-seedling me-2"></i>Top Selling Varieties
+          </h6>
+        </div>
+        <div class="card-body">
+          <canvas id="topVarietiesChart" height="300"></canvas>
+          <div class="mt-3">
+            {% for variety in top_varieties %}
+            <div class="d-flex align-items-center mb-2">
+              <div class="flex-shrink-0">
+                {% comment %}
+                <i
+                  class="fas fa-circle"
+                  style="color: {{ forloop.counter|get_chart_color }}"
+                ></i>
+                {% endcomment %}
+                <p>hello</p>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <span class="fw-semibold">{{ variety.0 }}</span>
+                <span class="float-end">{{ variety.1 }}%</span>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Additional Stats -->
+  <div class="row">
+    <!-- Order Status -->
+    <div class="col-lg-6 mb-4">
+      <div class="card shadow h-100">
+        <div class="card-header py-3 bg-white">
+          <h6 class="m-0 fw-bold text-primary">
+            <i class="fas fa-shopping-cart me-2"></i>Order Status
+          </h6>
+        </div>
+        <div class="card-body">
+          <canvas id="orderStatusChart" height="250"></canvas>
+          <div class="mt-3">
+            <div class="row text-center">
+              <div class="col-3">
+                <span class="fw-bold text-success">{{ completed_orders }}</span>
+                <div class="text-muted small">Completed</div>
+              </div>
+              <div class="col-3">
+                <span class="fw-bold text-info">{{ pending_orders }}</span>
+                <div class="text-muted small">Pending</div>
+              </div>
+              <div class="col-3">
+                <span class="fw-bold text-primary">{{ paid_orders }}</span>
+                <div class="text-muted small">Paid</div>
+              </div>
+              <div class="col-3">
+                <span class="fw-bold text-warning"
+                  >{{ order_status_data.3 }}</span
+                >
+                <div class="text-muted small">Cancelled</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inventory Status -->
+    <div class="col-lg-6 mb-4">
+      <div class="card shadow h-100">
+        <div class="card-header py-3 bg-white">
+          <h6 class="m-0 fw-bold text-primary">
+            <i class="fas fa-boxes me-2"></i>Inventory Status
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-sm table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>Variety</th>
+                  <th>Stock</th>
+                  <th>Sold</th>
+                  <th>Turnover</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in inventory_status %}
+                <tr>
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.stock }} units</td>
+                  <td>{{ item.sold }} units</td>
+                  <td>{{ item.turnover }} days</td>
+                  <td>
+                    {% if item.status == "Low" %}
+                    <span class="badge bg-danger">Low</span>
+                    {% elif item.status == "Medium" %}
+                    <span class="badge bg-warning">Medium</span>
+                    {% else %}
+                    <span class="badge bg-success">Good</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Purchases -->
+  <div class="row">
+    <div class="col-12 mb-4">
+      <div class="card shadow">
+        <div class="card-header py-3 bg-white">
+          <h6 class="m-0 fw-bold text-primary">
+            <i class="fas fa-history me-2"></i>Recent Purchases
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-sm table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>Date</th>
+                  <th>Manager</th>
+                  <th>Paddy Variety</th>
+                  <th>Quantity</th>
+                  <th>Total Price</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for purchase in recent_purchases %}
+                <tr>
+                  <td>{{ purchase.purchase_date|date:"M d, Y" }}</td>
+                  <td>{{ purchase.manager.full_name }}</td>
+                  <td>{{ purchase.paddy.name }}</td>
+                  <td>{{ purchase.quantity_purchased }} units</td>
+                  <td>{{ purchase.total_price|floatformat:2 }}</td>
+                  <td>
+                    {% if purchase.is_confirmed %}
+                    <span class="badge bg-success">Confirmed</span>
+                    {% else %}
+                    <span class="badge bg-warning">Pending</span>
+                    {% endif %} {% if purchase.payment %}
+                    <span class="badge bg-info ms-1">Paid</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="6" class="text-center py-4">
+                    No recent purchases found
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Sales Chart (with both sales and quantity)
+    const salesCtx = document.getElementById('salesChart').getContext('2d');
+    const salesChart = new Chart(salesCtx, {
+      type: 'bar',
+      data: {
+        labels: {{ sales_labels|safe }},
+        datasets: [
+          {
+            label: 'Sales',
+            data: {{ sales_data|safe }},
+            backgroundColor: 'rgba(78, 115, 223, 0.7)',
+            borderColor: 'rgba(78, 115, 223, 1)',
+            borderWidth: 1,
+            yAxisID: 'y'
+          },
+          {
+            label: 'Quantity Sold',
+            data: {{ quantity_sold|safe }},
+            backgroundColor: 'rgba(28, 200, 138, 0.7)',
+            borderColor: 'rgba(28, 200, 138, 1)',
+            borderWidth: 1,
+            type: 'line',
+            yAxisID: 'y1'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        interaction: {
+          mode: 'index',
+          intersect: false,
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                let label = context.dataset.label || '';
+                if (label) {
+                  label += ': ';
+                }
+                if (context.datasetIndex === 0) {
+                  label += '' + context.raw.toLocaleString();
+                } else {
+                  label += context.raw.toLocaleString() + ' units';
+                }
+                return label;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            title: {
+              display: true,
+              text: 'Sales '
+            },
+            ticks: {
+              callback: function(value) {
+                return '' + value.toLocaleString();
+              }
+            }
+          },
+          y1: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            title: {
+              display: true,
+              text: 'Quantity'
+            },
+            grid: {
+              drawOnChartArea: false,
+            }
+          }
+        }
+      }
+    });
+
+    // Top Varieties Chart
+    const topVarietiesCtx = document.getElementById('topVarietiesChart').getContext('2d');
+    const topVarietiesChart = new Chart(topVarietiesCtx, {
+      type: 'doughnut',
+      data: {
+        labels: {{ top_varieties_labels|safe }},
+        datasets: [{
+          data: {{ top_varieties_data|safe }},
+          backgroundColor: [
+            'rgba(78, 115, 223, 0.8)',
+            'rgba(28, 200, 138, 0.8)',
+            'rgba(246, 194, 62, 0.8)',
+            'rgba(231, 74, 59, 0.8)',
+            'rgba(120, 111, 166, 0.8)'
+          ],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.label + ': ' + context.raw + '%';
+              }
+            }
+          }
+        },
+        cutout: '70%'
+      }
+    });
+
+    // Order Status Chart
+    const orderStatusCtx = document.getElementById('orderStatusChart').getContext('2d');
+    const orderStatusChart = new Chart(orderStatusCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Completed', 'Pending', 'Paid', 'Cancelled'],
+        datasets: [{
+          data: {{ order_status_data|safe }},
+          backgroundColor: [
+            'rgba(28, 200, 138, 0.8)',
+            'rgba(246, 194, 62, 0.8)',
+            'rgba(54, 185, 204, 0.8)',
+            'rgba(231, 74, 59, 0.8)'
+          ],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+
+    // Time range selector
+    document.getElementById('salesTimeRange').addEventListener('change', function() {
+      // You would typically fetch new data via AJAX here
+      // For now we'll just show a message
+      alert('Loading data for last ' + this.value + ' days...');
+    });
+  });
+</script>
+
+<!-- Custom template filter for chart colors -->
+{% if not request.GET.skip_js %}
+<script>
+  // Simple template filter implementation for chart colors
+  window.getChartColor = function (index) {
+    const colors = [
+      "rgba(78, 115, 223, 1)",
+      "rgba(28, 200, 138, 1)",
+      "rgba(246, 194, 62, 1)",
+      "rgba(231, 74, 59, 1)",
+      "rgba(120, 111, 166, 1)",
+    ];
+    return colors[index % colors.length];
+  };
+</script>
+{% endif %}
+
+<style>
+  .card {
+    border: none;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .card:hover {
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+  }
+
+  .border-start-primary {
+    border-left: 0.25rem solid #4e73df !important;
+  }
+
+  .border-start-success {
+    border-left: 0.25rem solid #1cc88a !important;
+  }
+
+  .border-start-info {
+    border-left: 0.25rem solid #36b9cc !important;
+  }
+
+  .border-start-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+  }
+
+  .text-primary {
+    color: #4e73df !important;
+  }
+
+  .text-success {
+    color: #1cc88a !important;
+  }
+
+  .text-info {
+    color: #36b9cc !important;
+  }
+
+  .text-warning {
+    color: #f6c23e !important;
+  }
+
+  .bg-primary {
+    background-color: #4e73df !important;
+  }
+
+  .bg-success {
+    background-color: #1cc88a !important;
+  }
+
+  .bg-info {
+    background-color: #36b9cc !important;
+  }
+
+  .bg-warning {
+    background-color: #f6c23e !important;
+  }
+
+  .table-hover tbody tr {
+    transition: all 0.2s ease;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+</style>
+{% endblock %}
