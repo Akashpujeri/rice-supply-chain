@@ -1,0 +1,10 @@
+# Treat Django templates (HTML files) as Python
+*.html linguist-language=Python
+
+# Ignore static files (CSS, JS, images) from stats
+static/* linguist-vendored
+*.css linguist-vendored
+*.js linguist-vendored
+
+# You can also ignore media/uploads if any
+media/* linguist-vendored
